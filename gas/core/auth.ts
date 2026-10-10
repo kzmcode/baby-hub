@@ -53,20 +53,28 @@ function b64urlDecode(s: string): string {
   return utf8Decode(b64urlToBytes(s));
 }
 
+// GAS のパーサーは BigInt リテラル（0n 等）を受け付けないため BigInt() で生成する
+const B0 = BigInt(0);
+const B1 = BigInt(1);
+const B2 = BigInt(2);
+const B3 = BigInt(3);
+const B8 = BigInt(8);
+const B255 = BigInt(255);
+
 function bytesToBigInt(bytes: number[]): bigint {
-  let r = 0n;
-  for (const b of bytes) r = (r << 8n) | BigInt(b);
+  let r = B0;
+  for (const b of bytes) r = (r << B8) | BigInt(b);
   return r;
 }
 
 function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-  let result = 1n;
+  let result = B1;
   let b = base % mod;
   let e = exp;
-  while (e > 0n) {
-    if (e & 1n) result = (result * b) % mod;
+  while (e > B0) {
+    if (e & B1) result = (result * b) % mod;
     b = (b * b) % mod;
-    e >>= 1n;
+    e >>= B1;
   }
   return result;
 }
@@ -85,7 +93,7 @@ export function verifyRs256(signingInput: string, signatureB64: string, key: Rsa
     if (k < 128 || k > 512) return false; // 1024〜4096 bit
     const n = bytesToBigInt(nBytes);
     const e = bytesToBigInt(b64urlToBytes(key.e));
-    if (e < 3n || e % 2n === 0n || e.toString(2).length > 32) return false;
+    if (e < B3 || e % B2 === B0 || e.toString(2).length > 32) return false;
     const sig = b64urlToBytes(signatureB64);
     if (sig.length !== k) return false;
     const s = bytesToBigInt(sig);
@@ -93,9 +101,9 @@ export function verifyRs256(signingInput: string, signatureB64: string, key: Rsa
     const m = modPow(s, e, n);
     const em: number[] = new Array<number>(k).fill(0);
     let mm = m;
-    for (let i = k - 1; i >= 0 && mm > 0n; i--) {
-      em[i] = Number(mm & 255n);
-      mm >>= 8n;
+    for (let i = k - 1; i >= 0 && mm > B0; i--) {
+      em[i] = Number(mm & B255);
+      mm >>= B8;
     }
     const hash = sha256Bytes(Array.from(signingInput, (c) => c.charCodeAt(0)));
     const tail = [...SHA256_DIGEST_INFO, ...hash];

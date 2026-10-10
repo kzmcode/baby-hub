@@ -1,0 +1,133 @@
+/* デザイントークン（要件 18.7 C案「温かいアプリコット」）。
+   テーマ: data-theme="light|dark" 指定が最優先。未指定（system）は prefers-color-scheme に従う。 */
+:root {
+  /* 配色（ライト） */
+  --color-background: #FFF9F3;
+  --color-surface: #FFFCF8;
+  --color-text-primary: #443A34;
+  --color-text-secondary: #75665C;
+  --color-accent: #E4A27F;
+  --color-action-primary: #A95632;
+  --color-on-action: #FFFFFF;
+  --color-handover-surface: #FFF0E4;
+  --color-border: #E9DED5;
+  --color-border-strong: #A39386; /* 入力欄など操作境界（3:1 以上） */
+  --color-success: #4F6B51;
+  --color-danger: #B3261E;
+  --color-danger-surface: #FCE8E6;
+  --color-warning-surface: #FFF1D6;
+  --color-focus: #1F5FBF;
+  --color-overlay: rgba(40, 30, 24, 0.45);
+
+  /* カテゴリ（面 / アイコン・文字） */
+  --cat-diaper-bg: #EEF1E1;   --cat-diaper-fg: #586737;
+  --cat-feeding-bg: #FBE6DD;  --cat-feeding-fg: #9B4C39;
+  --cat-vomit-bg: #FFF1D6;    --cat-vomit-fg: #8C5E27;
+  --cat-sleep-bg: #ECE3F5;    --cat-sleep-fg: #66518A;
+  --cat-bath-bg: #E9F1FA;     --cat-bath-fg: #3F647B;
+  --cat-other-bg: #F1E9F5;    --cat-other-fg: #66518A;
+  /* 追加カテゴリ（体温・薬・成長・予定・用事・買い物・申し送り）も同系統の調子 */
+  --cat-temperature-bg: #FBE6DD; --cat-temperature-fg: #9B4C39;
+  --cat-medication-bg: #E6F0EA; --cat-medication-fg: #3F6650;
+  --cat-growth-bg: #EEF1E1;   --cat-growth-fg: #586737;
+  --cat-schedule-bg: #E9F1FA; --cat-schedule-fg: #3F647B;
+  --cat-task-bg: #F1E9F5;     --cat-task-fg: #66518A;
+  --cat-shopping-bg: #FFF1D6; --cat-shopping-fg: #8C5E27;
+  --cat-handover-bg: #FFF0E4; --cat-handover-fg: #A95632;
+
+  /* 形・余白・文字 */
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --tap-min: 48px;
+  --tap-record: 56px;
+  --font-sans: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+  --font-size-base: 16px;
+  --font-size-small: 14px;
+  --font-size-label: 17px;
+  --font-size-h2: 20px;
+  --font-size-h1: 24px;
+  --shadow-sm: 0 1px 2px rgba(68, 58, 52, 0.08);
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: 64px;
+  color-scheme: light;
+}
+
+/* ダーク値（system かつ OS がダークのとき） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-background: #211D1A;
+    --color-surface: #2D2723;
+    --color-text-primary: #F5ECE5;
+    --color-text-secondary: #CAB9AC;
+    --color-accent: #F1B18B;
+    --color-action-primary: #F1B18B;
+    --color-on-action: #2A160C;
+    --color-handover-surface: #3A2D25;
+    --color-border: #473D36;
+    --color-border-strong: #8E7F73;
+    --color-success: #9CC79F;
+    --color-danger: #FFB4AB;
+    --color-danger-surface: #4A2623;
+    --color-warning-surface: #40331F;
+    --color-focus: #8AB4FF;
+    --color-overlay: rgba(0, 0, 0, 0.6);
+    --cat-diaper-bg: #333826;   --cat-diaper-fg: #CBD8A4;
+    --cat-feeding-bg: #432C26;  --cat-feeding-fg: #F2B8A6;
+    --cat-vomit-bg: #40331F;    --cat-vomit-fg: #EDC88E;
+    --cat-sleep-bg: #352E45;    --cat-sleep-fg: #CDBBEB;
+    --cat-bath-bg: #263540;     --cat-bath-fg: #A9CBE2;
+    --cat-other-bg: #3A3043;    --cat-other-fg: #D6BFE6;
+    --cat-temperature-bg: #432C26; --cat-temperature-fg: #F2B8A6;
+    --cat-medication-bg: #263A2F; --cat-medication-fg: #A9D4B8;
+    --cat-growth-bg: #333826;   --cat-growth-fg: #CBD8A4;
+    --cat-schedule-bg: #263540; --cat-schedule-fg: #A9CBE2;
+    --cat-task-bg: #3A3043;     --cat-task-fg: #D6BFE6;
+    --cat-shopping-bg: #40331F; --cat-shopping-fg: #EDC88E;
+    --cat-handover-bg: #3A2D25; --cat-handover-fg: #F1B18B;
+    --shadow-sm: none;
+    color-scheme: dark;
+  }
+}
+
+/* ダーク値（設定で明示的にダーク） */
+:root[data-theme="dark"] {
+  --color-background: #211D1A;
+  --color-surface: #2D2723;
+  --color-text-primary: #F5ECE5;
+  --color-text-secondary: #CAB9AC;
+  --color-accent: #F1B18B;
+  --color-action-primary: #F1B18B;
+  --color-on-action: #2A160C;
+  --color-handover-surface: #3A2D25;
+  --color-border: #473D36;
+  --color-border-strong: #8E7F73;
+  --color-success: #9CC79F;
+  --color-danger: #FFB4AB;
+  --color-danger-surface: #4A2623;
+  --color-warning-surface: #40331F;
+  --color-focus: #8AB4FF;
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --cat-diaper-bg: #333826;   --cat-diaper-fg: #CBD8A4;
+  --cat-feeding-bg: #432C26;  --cat-feeding-fg: #F2B8A6;
+  --cat-vomit-bg: #40331F;    --cat-vomit-fg: #EDC88E;
+  --cat-sleep-bg: #352E45;    --cat-sleep-fg: #CDBBEB;
+  --cat-bath-bg: #263540;     --cat-bath-fg: #A9CBE2;
+  --cat-other-bg: #3A3043;    --cat-other-fg: #D6BFE6;
+  --cat-temperature-bg: #432C26; --cat-temperature-fg: #F2B8A6;
+  --cat-medication-bg: #263A2F; --cat-medication-fg: #A9D4B8;
+  --cat-growth-bg: #333826;   --cat-growth-fg: #CBD8A4;
+  --cat-schedule-bg: #263540; --cat-schedule-fg: #A9CBE2;
+  --cat-task-bg: #3A3043;     --cat-task-fg: #D6BFE6;
+  --cat-shopping-bg: #40331F; --cat-shopping-fg: #EDC88E;
+  --cat-handover-bg: #3A2D25; --cat-handover-fg: #F1B18B;
+  --shadow-sm: none;
+  color-scheme: dark;
+}

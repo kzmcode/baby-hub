@@ -1,0 +1,27 @@
+{
+  "name": "baby-hub-gas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:emu": "firebase emulators:exec --config ../firebase.json --only firestore,auth --project demo-baby-hub \"vitest run emu\"",
+    "dev": "tsx core/dev-server.ts",
+    "push": "npm run build && clasp push",
+    "deploy": "npm run build && clasp push && clasp deploy"
+  },
+  "devDependencies": {
+    "@google/clasp": "^3.4.1",
+    "@types/google-apps-script": "^1.0.83",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3",
+    "braces": "file:vendor/braces"
+  },
+  "overrides": {
+    "braces": "$braces"
+  }
+}

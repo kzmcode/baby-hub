@@ -8,7 +8,7 @@
 
 **現在の状態（前提）**
 - ローカルで `git init` 済み・未コミット
-- Firebase プロジェクト未作成（`.firebaserc` はプレースホルダ `baby-hub-dev`）
+- Firebase プロジェクト `baby-hub-kzm` を作成済み（単一プロジェクト構成。dev/prod の分離はしていない）
 - `web/.env` 未作成、GAS 未デプロイ
 - 型チェック・単体テスト・Rules テスト・GAS のエミュレータ結合テストは通過。**実 GAS 環境・実機・画面での動作は未確認**
 
@@ -199,18 +199,18 @@ firebase login:use <OWNER_EMAIL>   # 使用アカウントをこのプロジェ�
 
 | 用途 | プロジェクト ID 例 | エイリアス |
 | --- | --- | --- |
-| 開発 | `baby-hub-dev-kzm` | `dev` |
+| 開発 | `baby-hub-kzm` | `dev` |
 | 本番 | `baby-hub-prod-kzm` | `prod` |
 
 ```bash
-firebase projects:create baby-hub-dev-kzm --display-name "Baby hub Dev"
+firebase projects:create baby-hub-kzm --display-name "Baby hub Dev"
 firebase projects:create baby-hub-prod-kzm --display-name "Baby hub Prod"
 ```
 （Google Analytics は不要です。）
 
 ### 4.3 Firestore の作成（asia-northeast1）
 ```bash
-firebase firestore:databases:create '(default)' --location=asia-northeast1 --project baby-hub-dev-kzm
+firebase firestore:databases:create '(default)' --location=asia-northeast1 --project baby-hub-kzm
 ```
 Console の「Firestore Database > データベースを作成 > ロケーション: asia-northeast1 (Tokyo) > 本番モード」でも同じです。**ロケーションは後から変更できません。**
 
@@ -218,8 +218,8 @@ Console の「Firestore Database > データベースを作成 > ロケーショ
 ```json
 {
   "projects": {
-    "default": "baby-hub-dev-kzm",
-    "dev": "baby-hub-dev-kzm",
+    "default": "baby-hub-kzm",
+    "dev": "baby-hub-kzm",
     "prod": "baby-hub-prod-kzm"
   }
 }
@@ -371,7 +371,7 @@ Spark では Functions を使わないため、Firebase 側のデプロイは **
 
 ### 10.1 事前確認
 ```bash
-firebase use dev          # 対象を確認（本番は prod）
+firebase use              # 対象が baby-hub-kzm であることを確認
 ```
 gcloud による API 有効化は不要です（GAS 用の API 有効化は 7 章の GCP 紐付けで行う）。
 
@@ -467,7 +467,7 @@ HTTPS の Hosting URL（`https://<project-id>.web.app`）で確認します（�
 
 ### 13.2 復元演習（本番前に dev で 1 回通す）
 ```
-restoreBackup('baby-hub-dev-kzm', 'FULL_FILE_ID[,P2_ID]', 'INC1_ID,INC2_ID,...')
+restoreBackup('baby-hub-kzm', 'FULL_FILE_ID[,P2_ID]', 'INC1_ID,INC2_ID,...')
 ```
 - ファイル ID は `listBackups()` かドライブの URL から取得。対象は直近の完了フル + それ以降の差分。
 - 復元先 projectId が本番と同じ場合は第 4 引数 `'OVERWRITE_PRODUCTION'` が必要（誤爆防止）。

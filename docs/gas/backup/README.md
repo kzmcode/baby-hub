@@ -44,7 +44,7 @@ Firestore の公式バックアップ（Blaze 必須）の代わりに、GAS が
 2. 対象世代を決める: 直近の完了フル（manifest あり）1世代 + そのフル以降の差分すべて。
 3. Apps Script エディタで実行:
    ```
-   restoreBackup('baby-hub-dev', 'FULL_FILE_ID[,FULL_P2_FILE_ID]', 'INC1_ID,INC2_ID,...')
+   restoreBackup('baby-hub-kzm', 'FULL_FILE_ID[,FULL_P2_FILE_ID]', 'INC1_ID,INC2_ID,...')
    ```
    フルの複数パートはカンマ区切りで `fullFileId` に渡す。差分は `startedAt` 順に自動で並べ替えて適用する。同じ文書は `set` で上書きされる。
 4. **本番と同じ projectId を指定した場合は、第4引数 `'OVERWRITE_PRODUCTION'` が無いと拒否される。** 本番復元は、障害時にデータの確認が済んでいる場合に限る。

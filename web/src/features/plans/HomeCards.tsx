@@ -27,7 +27,7 @@ export function HomeHandoversCard() {
     <Card tone="handover" aria-label="申し送り">
       <div className="stack">
         <div className="pl-card-head">
-          <h2 className="row"><CategoryIcon name="handover" /> 申し送り</h2>
+          <h2 className="pl-head"><span className="pl-head__icon" style={{ background: 'var(--cat-handover-bg)', color: 'var(--cat-handover-fg)' }}><CategoryIcon name="handover" size={20} /></span>申し送り</h2>
           <Link to="/plans?tab=handovers" className="small">すべて見る</Link>
         </div>
         <ul className="pl-list">
@@ -42,9 +42,10 @@ export function HomeHandoversCard() {
                 <span className="pl-text">{h.text.length > 60 ? `${h.text.slice(0, 60)}…` : h.text}</span>
               </Link>
               <Button
+                variant="primary"
                 className="pl-check"
                 onClick={() => acknowledgeHandover(familyId!, h.id, user.uid, h.revision).catch((e) => toast.show(apiErrorMessage(e), { tone: 'error' }))}
-              >確認</Button>
+              ><CategoryIcon name="check" size={18} />確認した</Button>
             </li>
           ))}
         </ul>
@@ -71,7 +72,7 @@ export function HomeTodayPlansCard() {
     <Card aria-label="今日の予定と用事">
       <div className="stack">
         <div className="pl-card-head">
-          <h2 className="row"><CategoryIcon name="schedule" /> 今日の予定・用事</h2>
+          <h2 className="pl-head"><span className="pl-head__icon" style={{ background: 'var(--cat-schedule-bg)', color: 'var(--cat-schedule-fg)' }}><CategoryIcon name="schedule" size={20} /></span>今日の予定・用事</h2>
           <Link to="/plans" className="small">すべて見る</Link>
         </div>
         {plans.length === 0 && due.length === 0 && <p className="muted small">今日の予定・期限のあるToDoはありません</p>}
@@ -126,7 +127,7 @@ export function HomeShoppingCard() {
     <Card aria-label="買い物">
       <div className="stack">
         <div className="pl-card-head">
-          <h2 className="row"><CategoryIcon name="shopping" /> 買い物（{needed.length}件）</h2>
+          <h2 className="pl-head"><span className="pl-head__icon" style={{ background: 'var(--cat-shopping-bg)', color: 'var(--cat-shopping-fg)' }}><CategoryIcon name="shopping" size={20} /></span>買い物（{needed.length}件）</h2>
           <Link to="/plans?tab=shopping" className="small">すべて見る</Link>
         </div>
         <ul className="pl-list">

@@ -121,7 +121,7 @@ export function RoutineChart({ rows, fromHour = 0, toHour = 24, rowHeight = 40, 
               onKeyDown={(e) => { if (onRowClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onRowClick(r.date); } }}
               style={onRowClick ? { cursor: 'pointer' } : undefined}
             >
-              <rect x={LABEL_W} y={y + 1} width={PLOT_W} height={rowHeight - 2} rx={6} fill="var(--color-surface)" stroke="var(--color-border)" />
+              <rect x={LABEL_W} y={y + 1} width={PLOT_W} height={rowHeight - 2} rx={(rowHeight - 2) / 2} fill="var(--color-background)" stroke="var(--color-border)" />
               <text x={2} y={mid + 4} fontSize={11} fill="var(--color-text-primary)">{label}</text>
               {ticks.filter((h) => h > fromHour && h < toHour).map((h) => (
                 <line key={h} x1={toX(h * 60)} x2={toX(h * 60)} y1={y + 2} y2={y + rowHeight - 2} stroke="var(--color-border)" strokeWidth={1} />
@@ -132,13 +132,13 @@ export function RoutineChart({ rows, fromHour = 0, toHour = 24, rowHeight = 40, 
                 if (b.endMin <= fromHour * 60 || b.startMin >= toHour * 60 || x2 - x1 < 0.5) return null;
                 const props =
                   b.kind === 'closed'
-                    ? { fill: 'var(--cat-sleep-fg)', fillOpacity: 0.45, stroke: 'var(--cat-sleep-fg)' }
+                    ? { fill: 'var(--cat-sleep-fg)', fillOpacity: 0.3, stroke: 'var(--cat-sleep-fg)' }
                     : b.kind === 'open'
                       ? { fill: 'var(--cat-sleep-bg)', stroke: 'var(--cat-sleep-fg)', strokeDasharray: '4 3' }
                       : { fill: 'url(#rec-hatch-w)', stroke: 'var(--cat-vomit-fg)', strokeDasharray: '2 2' };
                 return (
                   <g key={`${b.sessionId}-${k}`}>
-                    <rect x={x1} y={y + 5} width={Math.max(x2 - x1, 1)} height={rowHeight - 10} rx={4} strokeWidth={1.5} {...props} />
+                    <rect x={x1} y={y + 5} width={Math.max(x2 - x1, 1)} height={rowHeight - 10} rx={(rowHeight - 10) / 2} strokeWidth={1.5} {...props} />
                     {b.kind !== 'closed' && x2 - x1 > 34 && (
                       <text x={(x1 + x2) / 2} y={mid + 3.5} fontSize={9.5} textAnchor="middle" fill="var(--color-text-primary)" fontWeight={700}>
                         {b.kind === 'open' ? '未終了' : '確認待ち'}

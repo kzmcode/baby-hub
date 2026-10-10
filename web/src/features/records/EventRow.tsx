@@ -21,9 +21,9 @@ export function EventRow({ ev, showDate, highlight, tag, to }: Props) {
   const d = describeEvent(ev);
   const cat = categoryOf(ev.type);
   return (
-    <Link to={to ?? `/records/${ev.id}`} className={`rec-row${highlight ? ' is-target' : ''}`} style={{ borderLeftColor: `var(--cat-${cat}-fg)` }}>
+    <Link to={to ?? `/records/${ev.id}`} className={`rec-row${highlight ? ' is-target' : ''}`}>
       <span className="rec-row__icon" style={{ background: `var(--cat-${cat}-bg)`, color: `var(--cat-${cat}-fg)` }}>
-        <CategoryIcon name={cat} size={22} />
+        <CategoryIcon name={cat} size={26} />
       </span>
       <span className="rec-row__main">
         <span className="rec-row__title">

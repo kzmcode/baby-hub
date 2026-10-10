@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Card, CategoryIcon, CategoryTile, EmptyState, Sheet, SyncBadge, syncStateOf, type CategoryName } from '../../components';
+import { Button, Card, CategoryIcon, CategoryTile, EmptyState, Sheet, type CategoryName } from '../../components';
 import { useAuth, useFamily, useUserSettings } from '../../context';
-import { useSyncStatus } from '../../lib/sync';
-import { addDaysStr, dayRange, formatAge, formatDuration, formatElapsed, formatTime, todayStr } from '../../lib/time';
+import { addDaysStr, dayRange, formatDuration, formatElapsed, formatTime, todayStr } from '../../lib/time';
 import type { HomeItemKey, QuickRecordKey } from '../../types/models';
 import { HomeHandoversCard, HomeShoppingCard, HomeTodayPlansCard } from '../plans';
 import { EventRow } from './EventRow';
@@ -29,10 +28,9 @@ const TILE: Record<QuickRecordKey, { cat: CategoryName; label: string }> = {
 const DEFAULT_ORDER: HomeItemKey[] = ['status', 'quickRecord', 'todayRhythm', 'recent', 'handovers', 'todayPlans', 'shopping'];
 
 export function HomePage() {
-  const { child, memberName, loading: famLoading } = useFamily();
+  const { memberName } = useFamily();
   const { user } = useAuth();
   const { settings } = useUserSettings();
-  const { online, pendingWrites, lastSyncedAt } = useSyncStatus();
   const now = useNow();
   const navigate = useNavigate();
   const { record } = useRecorder();
@@ -40,7 +38,7 @@ export function HomePage() {
   const today = todayStr(now);
   const yesterday = addDaysStr(today, -1);
   const winEnd = dayRange(today).end;
-  const { events, sessions, loading, fromCache } = useEventsRange(dayRange(yesterday).start, winEnd, 1, 0);
+  const { events, sessions, loading } = useEventsRange(dayRange(yesterday).start, winEnd, 1, 0);
   const lastFeed = useLatestOfType('feeding');
   const lastDiaper = useLatestOfType('diaper');
   const sleep = useMemo(() => currentSleepState(sessions), [sessions]);
@@ -80,13 +78,13 @@ export function HomePage() {
       case 'status':
         return (
           <section key={key} className="stack" aria-label="いまの状態">
-            <Card className="rec-sleepcard">
-              <div className="row">
-                <span className="rec-sleepcard__icon"><CategoryIcon name="sleep" size={28} /></span>
+            <Card className="rec-status">
+              <div className={`rec-sleepcard rec-sleepcard--${sleep.kind}`}>
+                <span className="rec-sleepcard__icon"><CategoryIcon name={sleep.kind === 'awake' ? 'sun' : sleep.kind === 'unconfirmed' ? 'alert' : 'sleep'} size={36} strokeWidth={1.6} /></span>
                 <div className="rec-sleepcard__text">
                   {sleep.kind === 'sleeping' && (<>
-                    <strong className="rec-big">睡眠中（記録上）{formatDuration((now.getTime() - sleep.since.getTime()) / 1000)}</strong>
-                    <span className="small">{formatTime(sleep.since)} から ・ 終了は未記録</span>
+                    <strong className="rec-big">記録上は睡眠中</strong>
+                    <span className="small">{formatTime(sleep.since)} から（経過 {formatDuration((now.getTime() - sleep.since.getTime()) / 1000)}）・終了は未記録</span>
                   </>)}
                   {sleep.kind === 'awake' && (<>
                     <strong className="rec-big">起きている</strong>
@@ -97,6 +95,10 @@ export function HomePage() {
                     <span className="small">{SLEEP_REASON_TEXT[sleep.sessions[0].reason!]}。<Link to="/records">記録を確認</Link></span>
                   </>)}
                 </div>
+              </div>
+              <div className="rec-now" aria-label="現在時刻">
+                <span className="small muted">いま</span>
+                <strong className="num">{formatTime(now)}</strong>
               </div>
             </Card>
             <div className="rec-last">
@@ -129,10 +131,10 @@ export function HomePage() {
       case 'todayRhythm':
         return (
           <Card key={key} aria-label="今日のリズム">
-            <div className="row">
+            <div className="rec-cardhead">
               <h2 className="rec-h2">今日のリズム</h2>
               <span className="spacer" />
-              <Link to="/records?view=week" className="rec-link">7日をみる</Link>
+              <Link to="/records?view=week" className="rec-link rec-link--accent">7日をみる <CategoryIcon name="chevronRight" size={16} /></Link>
             </div>
             <RoutineChart rows={rows} rowHeight={34} labelOf={(d) => (d === today ? '今日' : '昨日')} onRowClick={(d) => navigate(`/records?date=${d}&view=day`)} />
             <p className="small muted">記録された流れです。空白は「未記録」で、お世話がなかったとは限りません。</p>
@@ -141,14 +143,14 @@ export function HomePage() {
         );
       case 'recent':
         return (
-          <section key={key} aria-label="直近の記録" className="stack">
-            <div className="row"><h2 className="rec-h2">直近の記録</h2><span className="spacer" /><Link to="/records" className="rec-link">すべて見る</Link></div>
+          <Card key={key} aria-label="直近の記録" className="rec-recent">
+            <div className="rec-cardhead"><h2 className="rec-h2">最近の記録</h2><span className="spacer" /><Link to="/records" className="rec-link">すべてみる <CategoryIcon name="chevronRight" size={16} /></Link></div>
             {recent.length === 0 ? (
               <EmptyState title="まだ記録がありません" description="上のボタンから最初の記録を残せます。" icon="records" />
             ) : (
-              <div className="stack">{recent.map((e) => <EventRow key={e.id} ev={e} />)}</div>
+              <div className="rec-list">{recent.map((e) => <EventRow key={e.id} ev={e} />)}</div>
             )}
-          </section>
+          </Card>
         );
       case 'handovers': return <HomeHandoversCard key={key} />;
       case 'todayPlans': return <HomeTodayPlansCard key={key} />;
@@ -157,19 +159,8 @@ export function HomePage() {
     }
   }
 
-  const syncState = !online ? 'cache' : pendingWrites ? 'pending' : fromCache ? 'cache' : syncStateOf({});
-  const age = formatAge(child?.birthDate ?? null, now);
-
   return (
     <div className="page rec-home">
-      <header className="rec-head">
-        <div>
-          <div className="small muted">Baby hub</div>
-          <strong className="rec-head__name">{famLoading ? '読み込み中…' : child?.nickname ?? '子ども'}</strong>
-          {age && <span className="small muted"> ・ {age}</span>}
-        </div>
-        <SyncBadge state={syncState} lastSyncedAt={lastSyncedAt} />
-      </header>
       {items.map((i) => render(i.key))}
       <RecordedBar />
       {sheet && <RecordSheet open type={sheet} onClose={() => setSheet(null)} />}
@@ -195,16 +186,19 @@ function LastCard({ label, cat, ev, loading, now, extra, memberName }: {
 }) {
   return (
     <Card className="rec-lastcard" style={{ background: `var(--cat-${cat}-bg)`, color: `var(--cat-${cat}-fg)` }}>
-      <div className="small">{label}</div>
-      {ev ? (
-        <>
-          <div className="rec-lastcard__time num"><Link to={`/records/${ev.id}`}>{formatTime(ev.occurredAt)}</Link> <span className="small">{formatElapsed(ev.occurredAt, now)}</span></div>
-          <div className="small">{extra(ev)}</div>
-          <div className="small">{whoText(ev, memberName)}</div>
-        </>
-      ) : (
-        <div className="small">{loading ? '確認中…' : '記録なし'}</div>
-      )}
+      <span className="rec-lastcard__icon"><CategoryIcon name={cat} size={22} /></span>
+      <div className="rec-lastcard__body">
+        <div className="small">{label}</div>
+        {ev ? (
+          <>
+            <div className="rec-lastcard__time num"><Link to={`/records/${ev.id}`}>{formatTime(ev.occurredAt)}</Link> <span className="small">{formatElapsed(ev.occurredAt, now)}</span></div>
+            <div className="small">{extra(ev)}</div>
+            <div className="small">{whoText(ev, memberName)}</div>
+          </>
+        ) : (
+          <div className="small">{loading ? '確認中…' : '記録なし'}</div>
+        )}
+      </div>
     </Card>
   );
 }

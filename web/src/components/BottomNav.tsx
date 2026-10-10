@@ -15,7 +15,7 @@ export function BottomNav() {
     <nav className="ch-nav" aria-label="メインメニュー">
       {ITEMS.map((it) => (
         <NavLink key={it.to} to={it.to} end={it.end} className={({ isActive }) => `ch-nav__item${isActive ? ' is-active' : ''}`}>
-          <CategoryIcon name={it.icon} size={24} />
+          <span className="ch-nav__icon"><CategoryIcon name={it.icon} size={24} /></span>
           <span>{it.label}</span>
         </NavLink>
       ))}

@@ -15,3 +15,4 @@ export { ToastProvider, useToast } from './Toast';
 export { DateNav } from './DateNav';
 export { TimeInput } from './TimeInput';
 export { UpdatePrompt } from './UpdatePrompt';
+export { Logo } from './Logo';

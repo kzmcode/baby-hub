@@ -17,12 +17,12 @@ export function CategoryTile({ category, label, sublabel, onClick, active, disab
     <button
       type="button"
       className={`ch-tile${active ? ' is-active' : ''}`}
-      style={{ background: `var(--cat-${category}-bg)`, color: `var(--cat-${category}-fg)` }}
+      style={{ background: `var(--cat-${category}-bg)` }}
       onClick={onClick}
       disabled={disabled}
       aria-pressed={active}
     >
-      <CategoryIcon name={category} size={28} />
+      <span style={{ color: `var(--cat-${category}-fg)`, display: 'inline-flex' }}><CategoryIcon name={category} size={34} strokeWidth={1.7} /></span>
       <span className="ch-tile__text">
         <span className="ch-tile__label">{label}</span>
         {sublabel && <span className="ch-tile__sub">{sublabel}</span>}

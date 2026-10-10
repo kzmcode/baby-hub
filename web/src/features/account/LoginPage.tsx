@@ -4,7 +4,7 @@ import {
   sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect,
 } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
-import { Button, Card, Field, SegmentedControl, TextInput } from '../../components';
+import { Button, Card, Field, Logo, SegmentedControl, TextInput } from '../../components';
 import { authErrorMessage, shouldFallbackToRedirect } from './logic/errors';
 import './account.css';
 
@@ -63,7 +63,7 @@ export function LoginPage() {
 
   return (
     <main className="page stack acc-narrow">
-      <h1>Baby hub</h1>
+      <div className="row"><Logo size={56} /><h1 style={{ margin: 0 }}>Baby hub</h1></div>
       <p className="muted">夫婦で育児の記録・予定・健康情報を共有するアプリです。</p>
 
       <Card className="stack">

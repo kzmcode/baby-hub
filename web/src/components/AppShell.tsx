@@ -2,6 +2,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { BottomNav } from './BottomNav';
 import { SyncBadge } from './SyncBadge';
 import { CategoryIcon } from './CategoryIcon';
+import { Logo } from './Logo';
 import { useAuth, useFamily } from '../context';
 import { useSyncStatus } from '../lib/sync';
 import { formatAge } from '../lib/time';
@@ -21,9 +22,12 @@ export function AppShell() {
   return (
     <div className="ch-shell">
       <header className="ch-topbar">
-        <div className="ch-topbar__title">
-          <span className="small muted">Baby hub</span>
-          <strong>{child ? `${child.nickname}${age ? `（${age}）` : ''}` : '—'}</strong>
+        <div className="ch-brand">
+          <Logo size={44} />
+          <div className="ch-topbar__title">
+            <strong className="ch-topbar__name">Baby hub</strong>
+            <span className="ch-topbar__sub">{child ? `${child.nickname}${age ? `（${age}）` : ''}` : 'つながる、育てる、毎日を。'}</span>
+          </div>
         </div>
         <SyncBadge state={state} lastSyncedAt={lastSyncedAt} />
       </header>

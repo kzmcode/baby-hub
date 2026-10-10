@@ -1,5 +1,5 @@
 .pl-list { display: flex; flex-direction: column; gap: var(--space-2); list-style: none; margin: 0; padding: 0; }
-.pl-item { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.pl-item { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
 .pl-item--handover { background: var(--color-handover-surface); }
 .pl-item__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); color: inherit; text-decoration: none; }
 .pl-item__title { font-weight: 600; overflow-wrap: anywhere; }
@@ -17,3 +17,9 @@
 .pl-checkrow { display: flex; gap: var(--space-2); align-items: flex-start; min-height: var(--tap-min); }
 .pl-checkrow input { width: 24px; height: 24px; flex: none; margin-top: 2px; }
 .pl-card-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+
+.pl-head { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: 18px; }
+.pl-head__icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; flex: none; }
+.ch-card--handover .pl-head__icon { background: var(--color-action-primary) !important; color: var(--color-on-action) !important; }
+.ch-card--handover .pl-item { background: transparent; border: 0; padding: var(--space-1) 0; }
+.pl-card-head a { color: var(--color-text-secondary); text-decoration: none; font-weight: 600; }

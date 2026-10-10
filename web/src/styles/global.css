@@ -1,0 +1,38 @@
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  overscroll-behavior-y: none;
+}
+h1 { font-size: var(--font-size-h1); line-height: 1.3; margin: 0 0 var(--space-3); }
+h2 { font-size: var(--font-size-h2); line-height: 1.35; margin: 0 0 var(--space-2); }
+h3 { font-size: var(--font-size-label); margin: 0 0 var(--space-2); }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-action-primary); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.small { font-size: var(--font-size-small); }
+.muted { color: var(--color-text-secondary); }
+.num { font-variant-numeric: tabular-nums; }
+.stack { display: flex; flex-direction: column; gap: var(--space-3); }
+.row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.spacer { flex: 1; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* フォーカスリング（キーボード操作で必ず見える） */
+:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; border-radius: 4px; }
+
+/* ページ */
+.page { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

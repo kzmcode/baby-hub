@@ -10,9 +10,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
   notify: { handoverImportant: true, handoverNormal: true, scheduleReminder: true, taskDue: true, dose: true },
   homeItems: [
     { key: 'status', visible: true },
+    { key: 'recent', visible: true },
     { key: 'quickRecord', visible: true },
     { key: 'todayRhythm', visible: true },
-    { key: 'recent', visible: true },
     { key: 'handovers', visible: true },
     { key: 'todayPlans', visible: true },
     { key: 'shopping', visible: true },
@@ -26,9 +26,14 @@ const THEME_KEY = 'ch.theme';
 export function mergeSettings(saved?: Partial<UserSettings> | null): UserSettings {
   const s = saved ?? {};
   const known = new Set((s.homeItems ?? []).map((h) => h.key));
-  const homeItems = s.homeItems
+  let homeItems = s.homeItems
     ? [...s.homeItems, ...DEFAULT_SETTINGS.homeItems.filter((h) => !known.has(h.key))]
     : DEFAULT_SETTINGS.homeItems;
+  // Upgrade the previous default layout while preserving custom ordering and visibility.
+  const previousOrder = 'status,quickRecord,todayRhythm,recent,handovers,todayPlans,shopping';
+  if (homeItems.map((item) => item.key).join(',') === previousOrder) {
+    homeItems = DEFAULT_SETTINGS.homeItems.map((item) => homeItems.find((saved) => saved.key === item.key)!);
+  }
   return {
     theme: s.theme ?? DEFAULT_SETTINGS.theme,
     quietHours: { ...DEFAULT_SETTINGS.quietHours, ...s.quietHours },

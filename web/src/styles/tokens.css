@@ -2,38 +2,39 @@
    テーマ: data-theme="light|dark" 指定が最優先。未指定（system）は prefers-color-scheme に従う。 */
 :root {
   /* 配色（ライト） */
-  --color-background: #FFF9F3;
-  --color-surface: #FFFDFA;
-  --color-text-primary: #443A34;
-  --color-text-secondary: #75665C;
-  --color-accent: #E4A27F;
-  --color-action-primary: #A95632;
+  --color-background: #FCF8F4;
+  --color-surface: #FFFCF9;
+  --color-text-primary: #49362F;
+  --color-text-secondary: #806D62;
+  --color-accent: #D99069;
+  --color-action-primary: #B85F40;
   --color-on-action: #FFFFFF;
-  --color-handover-surface: #FFF0E4;
-  --color-border: #F0E4D9;
+  --color-handover-surface: #FFF0E3;
+  --color-border: #F0E6DD;
   --color-border-strong: #A39386; /* 入力欄など操作境界（3:1 以上） */
   --color-success: #4F6B51;
   --color-danger: #B3261E;
   --color-danger-surface: #FCE8E6;
-  --color-warning-surface: #FFF1D6;
+  --color-warning-surface: #FFF3DC;
   --color-focus: #1F5FBF;
   --color-overlay: rgba(40, 30, 24, 0.45);
 
   /* カテゴリ（面 / アイコン・文字） */
-  --cat-diaper-bg: #EEF1E1;   --cat-diaper-fg: #586737;
-  --cat-feeding-bg: #FBE6DD;  --cat-feeding-fg: #9B4C39;
-  --cat-vomit-bg: #FFF1D6;    --cat-vomit-fg: #8C5E27;
-  --cat-sleep-bg: #ECE3F5;    --cat-sleep-fg: #66518A;
-  --cat-bath-bg: #E9F1FA;     --cat-bath-fg: #3F647B;
-  --cat-other-bg: #F1E9F5;    --cat-other-fg: #66518A;
+  --cat-diaper-bg: #F0F2E5;   --cat-diaper-fg: #586737;
+  --cat-feeding-bg: #FCE8E2;  --cat-feeding-fg: #9B4C39;
+  --cat-vomit-bg: #FFF3DC;    --cat-vomit-fg: #8C5E27;
+  --cat-sleep-bg: #F0E8F7;    --cat-sleep-fg: #66518A;
+  --cat-bath-bg: #EAF2F8;     --cat-bath-fg: #3F647B;
+  --cat-wake-bg: var(--color-handover-surface); --cat-wake-fg: var(--cat-vomit-fg);
+  --cat-other-bg: #F0E7F8;    --cat-other-fg: #66518A;
   /* 追加カテゴリ（体温・薬・成長・予定・用事・買い物・申し送り）も同系統の調子 */
-  --cat-temperature-bg: #FBE6DD; --cat-temperature-fg: #9B4C39;
+  --cat-temperature-bg: #FCE8E2; --cat-temperature-fg: #9B4C39;
   --cat-medication-bg: #E6F0EA; --cat-medication-fg: #3F6650;
-  --cat-growth-bg: #EEF1E1;   --cat-growth-fg: #586737;
-  --cat-schedule-bg: #E9F1FA; --cat-schedule-fg: #3F647B;
-  --cat-task-bg: #F1E9F5;     --cat-task-fg: #66518A;
-  --cat-shopping-bg: #FFF1D6; --cat-shopping-fg: #8C5E27;
-  --cat-handover-bg: #FFF0E4; --cat-handover-fg: #A95632;
+  --cat-growth-bg: #F0F2E5;   --cat-growth-fg: #586737;
+  --cat-schedule-bg: #EAF2F8; --cat-schedule-fg: #3F647B;
+  --cat-task-bg: #F0E7F8;     --cat-task-fg: #66518A;
+  --cat-shopping-bg: #FFF3DC; --cat-shopping-fg: #8C5E27;
+  --cat-handover-bg: #FFF0E3; --cat-handover-fg: #B85F40;
 
   /* 形・余白・文字 */
   --radius-xl: 28px;
@@ -53,8 +54,8 @@
   --font-size-label: 17px;
   --font-size-h2: 20px;
   --font-size-h1: 24px;
-  --shadow-sm: 0 2px 10px rgba(169, 86, 50, 0.07);
-  --shadow-nav: 0 -4px 16px rgba(169, 86, 50, 0.08);
+  --shadow-sm: none;
+  --shadow-nav: 0 -2px 16px rgba(80, 51, 34, 0.025);
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

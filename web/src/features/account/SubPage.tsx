@@ -6,7 +6,7 @@ export function SubPage({ title, children }: { title: string; children: ReactNod
   return (
     <main className="page stack">
       <div className="acc-sub">
-        <Link to="/more" className="acc-back" aria-label="その他に戻る">‹ その他</Link>
+        <Link to="/more" className="acc-back" aria-label="設定に戻る">‹ 設定</Link>
       </div>
       <h1>{title}</h1>
       {children}

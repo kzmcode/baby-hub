@@ -74,7 +74,7 @@ export function ReportPage() {
         <>
           <Card>
             <h2>日別の集計</h2>
-            <div style={{ overflowX: 'auto' }}>
+            <div className="hl-table-scroll" role="region" aria-label="日別の集計表" tabIndex={0}>
               <table className="hl-table">
                 <thead><tr><th>日付</th><th>体温</th><th>吐いた</th><th>授乳</th><th>おむつ</th><th>睡眠(記録分)</th><th>薬</th></tr></thead>
                 <tbody>
@@ -96,19 +96,21 @@ export function ReportPage() {
           </Card>
           <Card>
             <h2>時系列</h2>
-            <table className="hl-table">
-              <thead><tr><th>日時</th><th>種類</th><th>内容</th><th>実施者</th></tr></thead>
-              <tbody>
-                {timeline.map((e) => (
-                  <tr key={e.id}>
-                    <td>{toDateStr(e.occurredAt).slice(5).replace('-', '/')} {formatTime(e.occurredAt)}</td>
-                    <td>{TYPE_LABEL[e.type]}</td>
-                    <td>{describe(e, medName)}{e.note ? `／${e.note}` : ''}</td>
-                    <td>{memberName(e.caregiverUid)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="hl-table-scroll" role="region" aria-label="時系列の記録表" tabIndex={0}>
+              <table className="hl-table">
+                <thead><tr><th>日時</th><th>種類</th><th>内容</th><th>実施者</th></tr></thead>
+                <tbody>
+                  {timeline.map((e) => (
+                    <tr key={e.id}>
+                      <td>{toDateStr(e.occurredAt).slice(5).replace('-', '/')} {formatTime(e.occurredAt)}</td>
+                      <td>{TYPE_LABEL[e.type]}</td>
+                      <td>{describe(e, medName)}{e.note ? `／${e.note}` : ''}</td>
+                      <td>{memberName(e.caregiverUid)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
         </>
       )}

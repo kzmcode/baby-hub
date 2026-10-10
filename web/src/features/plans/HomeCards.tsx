@@ -24,33 +24,29 @@ export function HomeHandoversCard() {
   if (list.length === 0) return null;
   const shown = list.slice(0, HANDOVER_MAX);
   return (
-    <Card tone="handover" aria-label="申し送り">
-      <div className="stack">
-        <div className="pl-card-head">
-          <h2 className="pl-head"><span className="pl-head__icon" style={{ background: 'var(--cat-handover-bg)', color: 'var(--cat-handover-fg)' }}><CategoryIcon name="handover" size={20} /></span>申し送り</h2>
-          <Link to="/plans?tab=handovers" className="small">すべて見る</Link>
-        </div>
-        <ul className="pl-list">
-          {shown.map((h) => (
-            <li key={h.id} className="pl-item">
-              <Link className="pl-item__main" to={`/plans/handovers/${h.id}`}>
-                <span className="row">
-                  {h.priority === 'important' && <span className="pl-badge pl-badge--alert">重要</span>}
-                  {ackLabel(h.revision, acks[h.id]?.handoverRevision)}
-                  <span className="small muted">{h.createdBy ? `${memberName(h.createdBy)}より` : ''}</span>
-                </span>
-                <span className="pl-text">{h.text.length > 60 ? `${h.text.slice(0, 60)}…` : h.text}</span>
-              </Link>
-              <Button
-                variant="primary"
-                className="pl-check"
-                onClick={() => acknowledgeHandover(familyId!, h.id, user.uid, h.revision).catch((e) => toast.show(apiErrorMessage(e), { tone: 'error' }))}
-              ><CategoryIcon name="check" size={18} />確認した</Button>
-            </li>
-          ))}
-        </ul>
-        {list.length > shown.length && <p className="small muted">ほか {list.length - shown.length} 件</p>}
-      </div>
+    <Card tone="handover" aria-label="申し送り" className="pl-home-handover">
+      <ul className="pl-home-handover__list">
+        {shown.map((h) => (
+          <li key={h.id} className="pl-home-handover__item">
+            <span className="pl-home-handover__icon"><CategoryIcon name="records" size={24} strokeWidth={1.6} /></span>
+            <Link className="pl-item__main" to={`/plans/handovers/${h.id}`}>
+              <span className="pl-home-handover__title">申し送り</span>
+              {(h.priority === 'important' || acks[h.id]?.handoverRevision != null) && <span className="row">
+                {h.priority === 'important' && <span className="pl-badge pl-badge--alert">重要</span>}
+                {ackLabel(h.revision, acks[h.id]?.handoverRevision)}
+              </span>}
+              <span className="pl-text">{h.text.length > 60 ? `${h.text.slice(0, 60)}…` : h.text}</span>
+              <span className="pl-home-handover__sender">{h.createdBy ? `${memberName(h.createdBy)}より` : ''}</span>
+            </Link>
+            <Button
+              variant="primary"
+              className="pl-check"
+              onClick={() => acknowledgeHandover(familyId!, h.id, user.uid, h.revision).catch((e) => toast.show(apiErrorMessage(e), { tone: 'error' }))}
+            ><CategoryIcon name="check" size={18} />確認した</Button>
+          </li>
+        ))}
+      </ul>
+      {list.length > shown.length && <Link to="/plans?tab=handovers" className="pl-home-handover__more">ほか {list.length - shown.length} 件をみる</Link>}
     </Card>
   );
 }

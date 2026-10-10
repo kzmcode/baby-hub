@@ -14,6 +14,22 @@
 .pl-check { min-width: var(--tap-min); min-height: var(--tap-min); }
 .pl-details > summary { min-height: var(--tap-min); display: flex; align-items: center; cursor: pointer; font-weight: 600; }
 .pl-addbar { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.pl-schedule-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.pl-schedule-toolbar .ch-seg { gap: 4px; }
+.pl-schedule-toolbar .ch-seg__item { padding-inline: 12px; }
+.pl-calendar { padding: 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
+.pl-calendar__head { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px auto; align-items: center; gap: 4px; margin-bottom: 12px; }
+.pl-calendar__head h2 { margin: 0; text-align: center; font-size: 16px; white-space: nowrap; }
+.pl-calendar__today { min-height: 48px; padding: 0 8px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-action-primary); font-size: 13px; font-weight: 600; }
+.pl-calendar__week, .pl-calendar__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.pl-calendar__week { text-align: center; font-size: 12px; color: var(--color-text-secondary); padding-block: 8px; }
+.pl-calendar__date { display: flex; align-items: center; flex-direction: column; justify-content: center; min-width: 0; min-height: 58px; padding: 4px 0; border: 1px solid transparent; border-radius: 12px; background: transparent; font-size: 15px; }
+.pl-calendar__date.is-outside { color: var(--color-text-secondary); background: var(--color-background); }
+.pl-calendar__date[aria-current="date"] > span:first-child { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.pl-calendar__date.is-selected { border-color: var(--color-action-primary); background: var(--color-handover-surface); color: var(--color-text-primary); }
+.pl-calendar__count { display: block; height: 18px; min-width: 18px; font-size: 10px; line-height: 18px; color: var(--color-text-secondary); margin-top: 4px; }
+.pl-calendar__count.has-active { background: var(--color-action-primary); color: var(--color-on-action); border-radius: 50%; padding-inline: 3px; }
+.pl-calendar__hint { margin: 12px 0 0; font-size: 11px; }
 .pl-checkrow { display: flex; gap: var(--space-2); align-items: flex-start; min-height: var(--tap-min); }
 .pl-checkrow input { width: 24px; height: 24px; flex: none; margin-top: 2px; }
 .pl-card-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
@@ -23,3 +39,25 @@
 .ch-card--handover .pl-head__icon { background: var(--color-action-primary) !important; color: var(--color-on-action) !important; }
 .ch-card--handover .pl-item { background: transparent; border: 0; padding: var(--space-1) 0; }
 .pl-card-head a { color: var(--color-text-secondary); text-decoration: none; font-weight: 600; }
+
+.pl-home-handover__list { list-style: none; margin: 0; padding: 0; }
+.pl-home-handover__item { display: flex; align-items: center; gap: 12px; }
+.pl-home-handover__item + .pl-home-handover__item { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-border); }
+.pl-home-handover__icon { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--color-accent); color: var(--color-on-action); }
+.pl-home-handover__title { font-size: 16px; font-weight: 600; }
+.pl-home-handover__sender { font-size: 10px; color: var(--color-text-secondary); }
+.pl-home-handover__more { display: inline-flex; align-items: center; min-height: 36px; margin-top: 6px; font-size: 12px; }
+@media (max-width: 359px) {
+  .pl-home-handover__item { display: grid; grid-template-columns: 36px 1fr; gap: 8px 12px; }
+  .pl-home-handover__icon { width: 36px; height: 36px; align-self: start; margin-top: 4px; }
+  .pl-home-handover__item .pl-check { grid-column: 2; justify-self: start; }
+}
+
+.pl-item__main, .pl-card-head h2 { overflow-wrap: anywhere; }
+.pl-check { flex: none; white-space: nowrap; }
+.pl-card-head { flex-wrap: wrap; }
+.pl-card-head > h2 { min-width: 0; }
+.pl-addbar > .ch-btn { min-height: 48px; }
+@media (max-width: 380px) {
+  .pl-addbar > .ch-btn { width: 100%; }
+}

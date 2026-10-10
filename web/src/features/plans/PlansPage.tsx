@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Button, CategoryIcon, EmptyState, Sheet, Tabs, useToast } from '../../components';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Button, CategoryIcon, EmptyState, SegmentedControl, Sheet, Tabs, useToast } from '../../components';
 import { useAuth, useFamily } from '../../context';
 import { apiErrorMessage, api } from '../../lib/api';
 import { createFamilyDoc, paths } from '../../lib/db';
 import { addDaysStr, formatDateLabel, formatTime, todayStr } from '../../lib/time';
 import { acknowledgeHandover, useMyAcks, usePlansData } from './data';
 import { ScheduleForm, ShoppingForm, TaskForm, HandoverForm } from './forms';
-import { ackState, compareHandovers, compareTasks, groupSchedules, isExpired, isForMe, taskUrgency } from './logic/plans';
+import { ackState, compareHandovers, compareSchedules, compareTasks, groupSchedules, isExpired, isForMe, scheduleDateOf, taskUrgency } from './logic/plans';
+import { isCalendarDate } from './logic/calendar';
+import { ScheduleCalendar } from './ScheduleCalendar';
 import { buildTemplateTask, missingTemplates } from './logic/templates';
 import { handoverCreate, scheduleCreate, shoppingCreate, taskCreate } from './payload';
 import type { PHandover, PlanTab, PSchedule, PShopping, PTask } from './types';
@@ -79,22 +81,53 @@ function SchedulesTab({ list }: { list: PSchedule[] }) {
   const [open, setOpen] = useState(false);
   const { busy, run } = useCreate(() => setOpen(false));
   const today = todayStr();
+  const [sp, setSp] = useSearchParams();
+  const view = sp.get('view') === 'calendar' ? 'calendar' : 'list';
+  const rawDate = sp.get('date');
+  const selected = isCalendarDate(rawDate) ? rawDate : today;
+  const set = (key: string, value: string) => {
+    const next = new URLSearchParams(sp);
+    next.set(key, value);
+    setSp(next, { replace: true });
+  };
+  const byDate = useMemo(() => {
+    const days = new Map<string, PSchedule[]>();
+    for (const schedule of [...list].sort(compareSchedules)) {
+      const date = scheduleDateOf(schedule);
+      if (date) days.set(date, [...(days.get(date) ?? []), schedule]);
+    }
+    return days;
+  }, [list]);
+  const selectedItems = byDate.get(selected) ?? [];
   const g = useMemo(() => groupSchedules(list, today), [list, today]);
   const online = useOnline();
   return (
     <div className="stack">
-      <div className="pl-addbar"><Button variant="primary" onClick={() => setOpen(true)}><CategoryIcon name="plus" size={18} /> 予定を追加</Button></div>
-      {list.length === 0 && <EmptyState icon="schedule" title="予定はまだありません" description="受診や手続きの日時を登録できます" />}
-      <DayBlock label="今日" items={g.today} />
-      <DayBlock label="明日" items={g.tomorrow} />
-      {g.later.map((d) => <DayBlock key={d.date} label={formatDateLabel(d.date)} items={d.items} />)}
-      <DayBlock label="日付未設定" items={g.undated} />
-      {g.past.length > 0 && (
-        <details className="pl-details">
-          <summary>過去の予定（{g.past.reduce((n, d) => n + d.items.length, 0)}件）</summary>
-          {g.past.map((d) => <DayBlock key={d.date} label={formatDateLabel(d.date)} items={d.items} />)}
-        </details>
-      )}
+      <div className="pl-schedule-toolbar">
+        <SegmentedControl ariaLabel="予定の表示" value={view} onChange={(v) => set('view', v)} options={[{ value: 'list', label: '一覧' }, { value: 'calendar', label: 'カレンダー' }]} />
+        <Button variant="primary" onClick={() => setOpen(true)}><CategoryIcon name="plus" size={18} /> 予定を追加</Button>
+      </div>
+      {view === 'calendar' ? <>
+        <ScheduleCalendar today={today} selected={selected} byDate={byDate} onSelect={(date) => set('date', date)} />
+        <div aria-live="polite">
+          {selectedItems.length > 0
+            ? <DayBlock label={`${formatDateLabel(selected)}の予定`} items={selectedItems} />
+            : <EmptyState icon="schedule" title={`${formatDateLabel(selected)}の予定はありません`} description="予定が決まったら「予定を追加」から登録できます" />}
+        </div>
+        <DayBlock label="日付未設定" items={g.undated} />
+      </> : <>
+        {list.length === 0 && <EmptyState icon="schedule" title="予定はまだありません" description="受診や手続きの日時を登録できます" />}
+        <DayBlock label="今日" items={g.today} />
+        <DayBlock label="明日" items={g.tomorrow} />
+        {g.later.map((d) => <DayBlock key={d.date} label={formatDateLabel(d.date)} items={d.items} />)}
+        <DayBlock label="日付未設定" items={g.undated} />
+        {g.past.length > 0 && (
+          <details className="pl-details">
+            <summary>過去の予定（{g.past.reduce((n, d) => n + d.items.length, 0)}件）</summary>
+            {g.past.map((d) => <DayBlock key={d.date} label={formatDateLabel(d.date)} items={d.items} />)}
+          </details>
+        )}
+      </>}
       <Sheet open={open} onClose={() => setOpen(false)} title="予定を追加">
         {!online && <OfflineNotice />}
         <ScheduleForm submitLabel="追加する" busy={busy} onSubmit={(v) => familyId && run(async () => { const id = await createFamilyDoc(paths.schedules(familyId).path, scheduleCreate(v)); void api.syncScheduleReminder({ familyId, scheduleId: id }).catch(() => {}); }, '予定を追加しました')} />
@@ -105,6 +138,7 @@ function SchedulesTab({ list }: { list: PSchedule[] }) {
 
 function DayBlock({ label, items }: { label: string; items: PSchedule[] }) {
   const { memberName } = useFamily();
+  const location = useLocation();
   if (items.length === 0) return null;
   return (
     <section>
@@ -112,7 +146,7 @@ function DayBlock({ label, items }: { label: string; items: PSchedule[] }) {
       <ul className="pl-list">
         {items.map((s) => (
           <li key={s.id} className={`pl-item${s.status !== 'planned' ? ' pl-item--done' : ''}`}>
-            <Link className="pl-item__main" to={`/plans/schedules/${s.id}`}>
+            <Link className="pl-item__main" to={`/plans/schedules/${s.id}`} state={{ plansReturnTo: `${location.pathname}${location.search}` }}>
               <span className="pl-item__title">{s.title}</span>
               <span className="small muted">
                 {s.allDay ? '終日' : s.startAt ? `${formatTime(s.startAt.toDate())}${s.endAt ? `〜${formatTime(s.endAt.toDate())}` : ''}` : ''}

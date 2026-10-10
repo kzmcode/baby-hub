@@ -23,13 +23,16 @@ export function AppShell() {
     <div className="ch-shell">
       <header className="ch-topbar">
         <div className="ch-brand">
-          <Logo size={44} />
+          <Logo size={52} />
           <div className="ch-topbar__title">
             <strong className="ch-topbar__name">Baby hub</strong>
             <span className="ch-topbar__sub">{child ? `${child.nickname}${age ? `（${age}）` : ''}` : 'つながる、育てる、毎日を。'}</span>
           </div>
         </div>
-        <SyncBadge state={state} lastSyncedAt={lastSyncedAt} />
+        <Link className="ch-sharing" to="/more/family" aria-label="家族と共有状態を確認">
+          <CategoryIcon name="family" size={28} strokeWidth={1.5} />
+          <SyncBadge state={state} lastSyncedAt={lastSyncedAt} />
+        </Link>
       </header>
       {!online && (
         <div className="ch-offline" role="status">

@@ -93,7 +93,7 @@ export function RecordsPage() {
   const toggleGroup = (k: string) => set({ types: (groups.includes(k) ? groups.filter((g) => g !== k) : [...groups, k]).join(',') || null });
 
   return (
-    <div className="page">
+    <div className="page rec-records">
       <Tabs
         ariaLabel="表示切替"
         value={view}
@@ -119,6 +119,7 @@ export function RecordsPage() {
         <label className="rec-who">
           <span className="small">実施者</span>
           <Select
+            aria-label="実施者"
             value={caregiver}
             onChange={(v) => set({ who: v === 'all' ? null : v })}
             options={[{ value: 'all', label: 'みんな' }, ...activeMembers.map((m) => ({ value: m.uid, label: m.displayName })), { value: 'none', label: '実施者未確認' }]}
@@ -143,36 +144,24 @@ export function RecordsPage() {
       {view !== 'week' && <SummaryCard s={summary} title={`${date === today ? '今日' : shortDate(date)}の集計`} />}
 
       {view !== 'list' && (
-        <Card>
-          {view === 'week' && (
-            <>
-              <div className="rec-zoom" role="group" aria-label="時間帯の拡大">
-                {ZOOMS.map((z) => (
-                  <button key={z.key} type="button" className={`rec-chip${zoom === z.key ? ' is-active' : ''}`} aria-pressed={zoom === z.key} onClick={() => setZoom(z.key)}>{z.label}</button>
-                ))}
-              </div>
-            </>
-          )}
-          {view === 'day' && (
-            <div className="rec-zoom" role="group" aria-label="時間帯の拡大">
+        <Card className="rec-routine-card" aria-label="時間帯ごとの記録">
+          <div className="rec-zoom" role="group" aria-label="時間帯の拡大">
               {ZOOMS.map((z) => (
                 <button key={z.key} type="button" className={`rec-chip${zoom === z.key ? ' is-active' : ''}`} aria-pressed={zoom === z.key} onClick={() => setZoom(z.key)}>{z.label}</button>
               ))}
-            </div>
-          )}
+          </div>
           {loading ? <p className="muted">読み込み中…</p> : (
             <RoutineChart
               rows={routines}
               fromHour={zoomDef.from}
               toHour={zoomDef.to}
-              rowHeight={view === 'day' ? 56 : 40}
               labelOf={shortDate}
               onRowClick={view === 'week' ? (d) => set({ view: 'day', date: d === today ? null : d }) : undefined}
               onMarkerClick={(id) => navigate(`/records/${id}`)}
             />
           )}
           <RoutineLegend />
-          <p className="small muted">空白は未記録の時間で、お世話がなかったとは限りません。薄い斜線はまだ来ていない時間です。{view === 'week' && '日付の行を押すとその日の一覧を開きます。'}</p>
+          <p className="small muted">空白は未記録の時間で、お世話がなかったとは限りません。薄い部分はまだ来ていない時間です。点線は終了未記録、斜線は確認待ちの睡眠です。{view === 'week' && '日付の行を押すとその日の一覧を開きます。'}</p>
         </Card>
       )}
 
@@ -197,7 +186,7 @@ export function RecordsPage() {
 
       {view !== 'week' && (
         <section className="stack" aria-label="記録一覧">
-          <div className="row"><h2 className="rec-h2">{date === today ? '今日' : shortDate(date)}の記録</h2><span className="spacer" /><label className="rec-add"><span className="sr-only">記録を追加</span>
+          <div className="rec-list-head"><h2 className="rec-h2">{date === today ? '今日' : shortDate(date)}の記録</h2><label className="rec-add"><span className="sr-only">記録を追加</span>
             <Select value="" onChange={(v) => v && setSheet(v as RecordSheetType)} aria-label="記録を追加"
               options={[{ value: '', label: '＋ 記録を追加' }, { value: 'feeding', label: '授乳・ミルク' }, { value: 'diaper', label: 'おむつ' }, { value: 'sleep', label: '寝た／起きた' }, { value: 'vomit', label: '吐いた' }, { value: 'bath', label: '沐浴' }, { value: 'other', label: 'その他' }]} /></label></div>
           {loading ? <p className="muted">読み込み中…</p> : dayEvents.length === 0 ? (

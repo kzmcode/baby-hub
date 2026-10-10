@@ -1,10 +1,10 @@
 import { useUserSettings } from '../../context';
-import { Button, Card, SegmentedControl, useToast } from '../../components';
+import { CategoryIcon, Card, SegmentedControl, useToast } from '../../components';
 import type { HomeItemKey, QuickRecordKey, UserSettings } from '../../types/models';
 import { SubPage } from './SubPage';
 
 const HOME_LABEL: Record<HomeItemKey, string> = {
-  status: '状態（最後の哺乳・おむつ・睡眠）', quickRecord: '記録ボタン', todayRhythm: '今日の生活リズム',
+  status: '状態・睡眠', quickRecord: '記録ボタン', todayRhythm: '今日の生活リズム',
   recent: '最近の記録', handovers: '申し送り', todayPlans: '今日の予定・用事', shopping: '買い物',
 };
 const QUICK_LABEL: Record<QuickRecordKey, string> = {
@@ -43,17 +43,17 @@ export function DisplaySection() {
       </Card>
       <Card className="stack">
         <h2>ホームの項目</h2>
-        <p className="small muted">使わない項目は非表示にできます。上下ボタンで順序を変えます（この設定はあなたの端末・アカウントだけに適用されます）。</p>
-        <ul className="acc-list">
+        <p className="small muted">使わない項目は非表示にできます。上下の矢印で順序を変えます（この設定はあなたの端末・アカウントだけに適用されます）。</p>
+        <ul className="acc-list acc-display-items">
           {settings.homeItems.map((h, i) => (
             <li key={h.key}>
               <label className="acc-check">
                 <input type="checkbox" checked={h.visible} onChange={() => toggleItem(i)} />
                 <span>{HOME_LABEL[h.key]}</span>
               </label>
-              <span className="row">
-                <Button aria-label={`${HOME_LABEL[h.key]}を上へ`} disabled={i === 0} onClick={() => move(i, -1)}>上へ</Button>
-                <Button aria-label={`${HOME_LABEL[h.key]}を下へ`} disabled={i === settings.homeItems.length - 1} onClick={() => move(i, 1)}>下へ</Button>
+              <span className="acc-display-controls">
+                <button type="button" className="ch-iconbtn" aria-label={`${HOME_LABEL[h.key]}を上へ`} disabled={i === 0} onClick={() => move(i, -1)}><CategoryIcon name="chevronUp" size={20} /></button>
+                <button type="button" className="ch-iconbtn" aria-label={`${HOME_LABEL[h.key]}を下へ`} disabled={i === settings.homeItems.length - 1} onClick={() => move(i, 1)}><CategoryIcon name="chevronDown" size={20} /></button>
               </span>
             </li>
           ))}

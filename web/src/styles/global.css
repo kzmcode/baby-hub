@@ -31,7 +31,7 @@ button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; border-radius: 4px; }
 
 /* ページ */
-.page { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+.page { padding: 16px 20px; display: flex; flex-direction: column; gap: var(--space-4); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

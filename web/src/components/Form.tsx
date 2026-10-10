@@ -45,11 +45,14 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onC
 }
 export function Select({ options, onChange, className = '', ...rest }: SelectProps) {
   return (
-    <select className={`ch-input ch-select ${className}`} onChange={(e) => onChange?.(e.target.value)} {...rest}>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
-    </select>
+    <span className="ch-select-wrap">
+      <select className={`ch-input ch-select ${className}`} onChange={(e) => onChange?.(e.target.value)} {...rest}>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+      {!rest.multiple && !(rest.size && rest.size > 1) && <CategoryIcon className="ch-select-arrow" name="chevronDown" size={20} />}
+    </span>
   );
 }
 

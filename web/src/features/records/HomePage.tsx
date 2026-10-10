@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button, Card, CategoryIcon, CategoryTile, EmptyState, Sheet, type CategoryName } from '../../components';
 import { useAuth, useFamily, useUserSettings } from '../../context';
 import { addDaysStr, dayRange, formatDuration, formatElapsed, formatTime, todayStr } from '../../lib/time';
 import type { HomeItemKey, QuickRecordKey } from '../../types/models';
 import { HomeHandoversCard, HomeShoppingCard, HomeTodayPlansCard } from '../plans';
 import { EventRow } from './EventRow';
+import { HomeRhythm } from './HomeRhythm';
 import { RecordedBar } from './RecordedBar';
 import { RecordSheet, type RecordSheetType } from './RecordSheet';
-import { RoutineChart, RoutineLegend } from './RoutineChart';
 import { useEventsRange, useLatestOfType } from './hooks';
 import { amountText, feedingLabel, whoText } from './logic/describe';
 import { buildDayRoutine } from './logic/routine';
@@ -25,14 +25,13 @@ const TILE: Record<QuickRecordKey, { cat: CategoryName; label: string }> = {
   bath: { cat: 'bath', label: '沐浴' },
   other: { cat: 'other', label: 'その他' },
 };
-const DEFAULT_ORDER: HomeItemKey[] = ['status', 'quickRecord', 'todayRhythm', 'recent', 'handovers', 'todayPlans', 'shopping'];
+const DEFAULT_ORDER: HomeItemKey[] = ['status', 'recent', 'quickRecord', 'todayRhythm', 'handovers', 'todayPlans', 'shopping'];
 
 export function HomePage() {
   const { memberName } = useFamily();
   const { user } = useAuth();
   const { settings } = useUserSettings();
   const now = useNow();
-  const navigate = useNavigate();
   const { record } = useRecorder();
 
   const today = todayStr(now);
@@ -65,9 +64,9 @@ export function HomePage() {
   }
 
   const recent = useMemo(() => [...events].sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime()).slice(0, 5), [events]);
-  const rows = useMemo(
-    () => [yesterday, today].map((d) => buildDayRoutine(events, sessions, d, now)),
-    [events, sessions, yesterday, today, now],
+  const rhythm = useMemo(
+    () => buildDayRoutine(events, sessions, today, now),
+    [events, sessions, today, now],
   );
 
   const items = (settings.homeItems?.length ? settings.homeItems : DEFAULT_ORDER.map((key) => ({ key, visible: true }))).filter((i) => i.visible);
@@ -80,11 +79,11 @@ export function HomePage() {
           <section key={key} className="stack" aria-label="いまの状態">
             <Card className="rec-status">
               <div className={`rec-sleepcard rec-sleepcard--${sleep.kind}`}>
-                <span className="rec-sleepcard__icon"><CategoryIcon name={sleep.kind === 'awake' ? 'sun' : sleep.kind === 'unconfirmed' ? 'alert' : 'sleep'} size={36} strokeWidth={1.6} /></span>
+                <span className="rec-sleepcard__icon"><CategoryIcon name={sleep.kind === 'awake' ? 'sun' : sleep.kind === 'unconfirmed' ? 'alert' : 'sleep'} size={40} strokeWidth={1.5} /></span>
                 <div className="rec-sleepcard__text">
                   {sleep.kind === 'sleeping' && (<>
                     <strong className="rec-big">記録上は睡眠中</strong>
-                    <span className="small">{formatTime(sleep.since)} から（経過 {formatDuration((now.getTime() - sleep.since.getTime()) / 1000)}）・終了は未記録</span>
+                    <span className="small">{formatTime(sleep.since)} から（経過 {formatDuration((now.getTime() - sleep.since.getTime()) / 1000)}）</span>
                   </>)}
                   {sleep.kind === 'awake' && (<>
                     <strong className="rec-big">起きている</strong>
@@ -97,14 +96,10 @@ export function HomePage() {
                 </div>
               </div>
               <div className="rec-now" aria-label="現在時刻">
-                <span className="small muted">いま</span>
+                <span className="small">いま</span>
                 <strong className="num">{formatTime(now)}</strong>
               </div>
             </Card>
-            <div className="rec-last">
-              <LastCard label="最終哺乳" cat="feeding" ev={lastFeed.event} loading={lastFeed.loading} now={now} extra={(e) => `${feedingLabel(e)}${amountText(e) ? ` ${amountText(e)}` : ''}`} memberName={memberName} />
-              <LastCard label="最終おむつ" cat="diaper" ev={lastDiaper.event} loading={lastDiaper.loading} now={now} extra={(e) => `尿:${yn(e.payload.urine)} 便:${yn(e.payload.stool)}`} memberName={memberName} />
-            </div>
           </section>
         );
       case 'quickRecord':
@@ -116,11 +111,10 @@ export function HomePage() {
                 if (!t) return null;
                 if (k === 'sleep') {
                   const label = sleep.kind === 'sleeping' ? '起きた' : sleep.kind === 'unconfirmed' ? '睡眠を確認' : '寝た';
-                  return <CategoryTile key={k} category="sleep" label={label} sublabel={sleep.kind === 'sleeping' ? `${formatTime(sleep.since)} から睡眠中` : undefined} onClick={quickSleep} disabled={loading} />;
+                  return <CategoryTile key={k} category="sleep" icon={sleep.kind === 'sleeping' ? 'sun' : sleep.kind === 'unconfirmed' ? 'alert' : undefined} label={label} onClick={quickSleep} disabled={loading} />;
                 }
-                const sub = k === 'vomit' || k === 'bath' ? '1タップで保存' : undefined;
                 const click = k === 'vomit' ? quickVomit : k === 'bath' ? quickBath : () => setSheet(k as RecordSheetType);
-                return <CategoryTile key={k} category={t.cat} label={t.label} sublabel={sub} onClick={click} />;
+                return <CategoryTile key={k} category={t.cat} label={t.label} onClick={click} />;
               })}
             </div>
             <div className="row rec-tiles__more">
@@ -130,15 +124,14 @@ export function HomePage() {
         );
       case 'todayRhythm':
         return (
-          <Card key={key} aria-label="今日のリズム">
+          <Card key={key} aria-label="今日のリズム" className="rec-rhythm-card">
             <div className="rec-cardhead">
               <h2 className="rec-h2">今日のリズム</h2>
               <span className="spacer" />
               <Link to="/records?view=week" className="rec-link rec-link--accent">7日をみる <CategoryIcon name="chevronRight" size={16} /></Link>
             </div>
-            <RoutineChart rows={rows} rowHeight={34} labelOf={(d) => (d === today ? '今日' : '昨日')} onRowClick={(d) => navigate(`/records?date=${d}&view=day`)} />
-            <p className="small muted">記録された流れです。空白は「未記録」で、お世話がなかったとは限りません。</p>
-            <RoutineLegend />
+            <HomeRhythm routine={rhythm} />
+            <p className="rec-rhythm-note">空白は未記録。睡眠の点線は終了未記録です。</p>
           </Card>
         );
       case 'recent':
@@ -146,10 +139,17 @@ export function HomePage() {
           <Card key={key} aria-label="直近の記録" className="rec-recent">
             <div className="rec-cardhead"><h2 className="rec-h2">最近の記録</h2><span className="spacer" /><Link to="/records" className="rec-link">すべてみる <CategoryIcon name="chevronRight" size={16} /></Link></div>
             {recent.length === 0 ? (
-              <EmptyState title="まだ記録がありません" description="上のボタンから最初の記録を残せます。" icon="records" />
+              <EmptyState title="まだ記録がありません" description="お世話ボタンから、今日のひとつを。" icon="records" />
             ) : (
-              <div className="rec-list">{recent.map((e) => <EventRow key={e.id} ev={e} />)}</div>
+              <div className="rec-list">{recent.slice(0, 2).map((e) => <EventRow key={e.id} ev={e} compact />)}</div>
             )}
+            <details className="rec-last-details">
+              <summary>最後の授乳・おむつを確認</summary>
+              <div className="rec-last">
+                <LastCard label="最終哺乳" cat="feeding" ev={lastFeed.event} loading={lastFeed.loading} now={now} extra={(e) => `${feedingLabel(e)}${amountText(e) ? ` ${amountText(e)}` : ''}`} memberName={memberName} />
+                <LastCard label="最終おむつ" cat="diaper" ev={lastDiaper.event} loading={lastDiaper.loading} now={now} extra={(e) => `尿:${yn(e.payload.urine)} 便:${yn(e.payload.stool)}`} memberName={memberName} />
+              </div>
+            </details>
           </Card>
         );
       case 'handovers': return <HomeHandoversCard key={key} />;

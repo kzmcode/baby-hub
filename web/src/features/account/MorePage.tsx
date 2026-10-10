@@ -23,7 +23,7 @@ export function MorePage() {
   const pendingInvite = role === 'owner' ? loadInvite() : null;
   return (
     <main className="page stack">
-      <h1>その他</h1>
+      <h1>設定</h1>
       <Card>
         <p><strong>{family?.name}</strong>{child ? `・${child.nickname}` : ''}{child?.isSample && <> <span className="acc-badge">練習データ</span></>}</p>
         <p className="small muted">{user?.email ?? user?.displayName}・{role === 'owner' ? '管理者' : 'メンバー'}</p>

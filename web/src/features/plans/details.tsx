@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { doc } from 'firebase/firestore';
 import { Button, Card, CategoryIcon, ConflictNotice, EmptyState, useToast } from '../../components';
 import { useAuth, useFamily } from '../../context';
@@ -17,8 +17,16 @@ import { ConfirmSheet, OfflineNotice, RefList, SCHEDULE_CATEGORY, TASK_CATEGORY,
 import { AckStatusBadge } from './PlansPage';
 import './plans.css';
 
+function usePlansReturnTo(tab: string) {
+  const { state } = useLocation();
+  const target: unknown = state?.plansReturnTo;
+  return tab === 'schedules' && typeof target === 'string' && (target === '/plans' || target.startsWith('/plans?'))
+    ? target : `/plans?tab=${tab}`;
+}
+
 function BackLink({ tab }: { tab: string }) {
-  return <Link to={`/plans?tab=${tab}`} className="row"><CategoryIcon name="chevronLeft" size={18} />一覧へ戻る</Link>;
+  const target = usePlansReturnTo(tab);
+  return <Link to={target} className="row"><CategoryIcon name="chevronLeft" size={18} />{target.includes('view=calendar') ? 'カレンダーへ戻る' : '一覧へ戻る'}</Link>;
 }
 
 /** 更新・削除の共通処理（楽観ロック競合は conflict に保持し、入力はフォーム側に残す） */
@@ -26,6 +34,7 @@ function useDocActions(kind: DocKind, docId: string, revision: number | undefine
   const { familyId } = useFamily();
   const toast = useToast();
   const navigate = useNavigate();
+  const backTo = usePlansReturnTo(backTab);
   const [busy, setBusy] = useState(false);
   const [conflict, setConflict] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -52,7 +61,7 @@ function useDocActions(kind: DocKind, docId: string, revision: number | undefine
     try {
       await api.deleteDoc({ familyId, kind: kind as DeletableKind, docId, expectedRevision: revision });
       toast.show('削除しました');
-      navigate(`/plans?tab=${backTab}`, { replace: true });
+      navigate(backTo, { replace: true });
     } catch (e) {
       setConfirmDelete(false);
       if (toApiError(e).isConflict) setConflict(true);

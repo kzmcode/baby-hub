@@ -14,3 +14,10 @@
 .acc-steps .is-on { color: var(--color-action-primary); font-weight: 700; }
 .acc-err { color: var(--color-danger); }
 .acc-narrow { max-width: 480px; margin-inline: auto; }
+
+.acc-display-items > li { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 12px; }
+.acc-display-items .acc-check { min-width: 0; }
+.acc-display-items .acc-check span { overflow-wrap: anywhere; }
+.acc-display-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.acc-menu__item > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.acc-check > input { flex: none; }

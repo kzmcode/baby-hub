@@ -1,12 +1,12 @@
-.hl-head { display: flex; align-items: center; gap: var(--space-2); }
-.hl-head h1 { margin: 0; flex: 1; }
-.hl-head__actions { display: flex; gap: var(--space-2); }
+.hl-head { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.hl-head h1 { min-width: 0; margin: 0; flex: 1; overflow-wrap: anywhere; }
+.hl-head__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .hl-card-link { display: block; text-decoration: none; color: inherit; }
 .hl-card-link > .ch-card { display: flex; flex-direction: column; gap: var(--space-1); }
-.hl-card-title { display: flex; align-items: center; gap: var(--space-2); font-weight: 700; }
+.hl-card-title { overflow-wrap: anywhere; display: flex; align-items: center; gap: var(--space-2); font-weight: 700; }
 .hl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .hl-item { display: flex; flex-direction: column; gap: var(--space-1); }
-.hl-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.hl-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-2); }
 .hl-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-small); }
 .hl-table th, .hl-table td { border-bottom: 1px solid var(--color-border); padding: var(--space-1) var(--space-2); text-align: left; vertical-align: top; }
 .hl-badge { display: inline-block; font-size: var(--font-size-small); border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill); padding: 0 var(--space-2); }
@@ -24,4 +24,20 @@
   body, .ch-shell, .ch-main, .page { background: #fff !important; color: #000 !important; }
   .ch-card { box-shadow: none; border-color: #999; break-inside: avoid; }
   .hl-table th, .hl-table td { border-color: #999; }
+}
+
+.hl-card-title > svg { flex: none; }
+.hl-card-link .small, .hl-item p { overflow-wrap: anywhere; }
+.hl-table-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.hl-table-scroll .hl-table { min-width: 540px; }
+.hl-table th, .hl-table td { overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .hl-head h1 { font-size: 20px; }
+  .hl-head__actions .ch-btn { font-size: 14px; padding-inline: 12px; }
+  .hl-grid2:has(input[type="date"]) { grid-template-columns: 1fr; }
+  .hl-grid2 > .ch-btn { font-size: 14px; padding-inline: 8px; }
+}
+@media print {
+  .hl-table-scroll { overflow: visible; }
+  .hl-table-scroll .hl-table { min-width: 0; }
 }

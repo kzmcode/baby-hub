@@ -59,11 +59,21 @@
 .ch-field { min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .ch-field__label { font-weight: 600; font-size: var(--font-size-label); }
 .ch-field__error { color: var(--color-danger); }
+.ch-field__req { display: inline-block; margin-left: var(--space-2); padding: 0 8px; border-radius: var(--radius-pill); background: var(--color-danger-surface); color: var(--color-danger); font-size: 12px; font-weight: 700; line-height: 1.6; vertical-align: 2px; }
 .ch-input {
   min-height: var(--tap-min); min-width: 0; max-width: 100%; padding: var(--space-2) var(--space-3); width: 100%;
   background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md);
 }
 .ch-textarea { min-height: 96px; resize: vertical; }
+/* 日付・時刻: iOS Safari はネイティブ幅を優先して親からはみ出すため、外観を解除して親幅に合わせる */
+.ch-input[type="date"], .ch-input[type="time"], .ch-input[type="datetime-local"] {
+  -webkit-appearance: none; appearance: none; display: block; min-width: 0; width: 100%; max-width: 100%;
+  height: var(--tap-min); line-height: normal; text-align: left;
+}
+.ch-input::-webkit-date-and-time-value { text-align: left; margin: 0; min-height: 1.5em; }
+.ch-input::-webkit-datetime-edit { padding: 0; }
+/* 2 つの入力を横並び（開始・終了など）。各列は縮められる */
+.ch-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-3); align-items: start; }
 .ch-select-wrap { position: relative; display: block; min-width: 0; width: 100%; }
 .ch-select:not([multiple]):not([size]), .ch-select[size="1"] { appearance: none; -webkit-appearance: none; padding-right: 42px; height: var(--tap-min); line-height: normal; text-align: left; }
 .ch-select-arrow { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--color-text-secondary); }

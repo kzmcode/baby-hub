@@ -75,7 +75,7 @@ export function ScheduleForm({ initial, submitLabel, busy, onSubmit, notice }: {
         <input type="checkbox" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} /> 終日
       </label>
       {!allDay && (
-        <div className="row">
+        <div className="ch-pair">
           <Field label="開始">{({ id }) => <TextInput id={id} type="time" value={start} onChange={(e) => setStart(e.target.value)} />}</Field>
           <Field label="終了" optional>{({ id }) => <TextInput id={id} type="time" value={end} onChange={(e) => setEnd(e.target.value)} />}</Field>
         </div>

@@ -2,6 +2,12 @@ export { getDeviceId, cleanupDeviceRegistration } from '../../lib/device';
 
 const INVITE_KEY = 'ch.setupInvite';
 
+// 初期設定の作成〜招待発行の途中は、家族の確定を検知した SetupGuard がホームへ飛ばさないようにする
+// （再読み込みで消えるよう、保存はメモリのみ）
+let setupInFlight = false;
+export function setSetupInFlight(v: boolean): void { setupInFlight = v; }
+export function isSetupInFlight(): boolean { return setupInFlight; }
+
 export interface StoredInvite { inviteId: string; token: string; expiresAt: string }
 export function saveInvite(i: StoredInvite | null): void {
   try { if (i) sessionStorage.setItem(INVITE_KEY, JSON.stringify(i)); else sessionStorage.removeItem(INVITE_KEY); } catch { /* ignore */ }

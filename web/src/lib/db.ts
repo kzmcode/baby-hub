@@ -78,7 +78,10 @@ function useStable<T extends Query | DocumentReference | null>(value: T): T {
 export function useCollection<T = DocumentData>(q: Query | CollectionReference | null): CollectionState<T> {
   const stable = useStable(q as Query | null);
   const [state, setState] = useState<CollectionState<T>>({ data: [], loading: !!q, error: null, fromCache: false });
+  // state がどのクエリの結果か。クエリ切替直後（エフェクト実行前の描画）に古い loading=false を返さないため
+  const [src, setSrc] = useState<Query | null>(stable);
   useEffect(() => {
+    setSrc(stable);
     if (!stable) {
       setState({ data: [], loading: false, error: null, fromCache: false });
       return;
@@ -97,14 +100,16 @@ export function useCollection<T = DocumentData>(q: Query | CollectionReference |
       (error) => setState((s) => ({ ...s, loading: false, error })),
     );
   }, [stable]);
-  return state;
+  return src === stable ? state : { ...state, loading: !!stable };
 }
 
 /** ドキュメント購読。null なら購読しない */
 export function useDocument<T = DocumentData>(ref: DocumentReference | null): DocumentState<T> {
   const stable = useStable(ref);
   const [state, setState] = useState<DocumentState<T>>({ data: null, loading: !!ref, error: null, fromCache: false });
+  const [src, setSrc] = useState<DocumentReference | null>(stable);
   useEffect(() => {
+    setSrc(stable);
     if (!stable) {
       setState({ data: null, loading: false, error: null, fromCache: false });
       return;
@@ -123,7 +128,7 @@ export function useDocument<T = DocumentData>(ref: DocumentReference | null): Do
       (error) => setState((s) => ({ ...s, loading: false, error })),
     );
   }, [stable]);
-  return state;
+  return src === stable ? state : { ...state, loading: !!stable };
 }
 
 /** undefined を再帰的に除去（Firestore は undefined 不可、Rules は未知キー拒否） */

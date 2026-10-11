@@ -7,6 +7,7 @@ import { HandoverDetailPage, PlansPage, ScheduleDetailPage, TaskDetailPage } fro
 import { HealthPage, HealthRoutes } from '../features/health';
 import { INVITE_STORAGE_KEY, stashInviteFromLocation } from '../features/account/logic/invite';
 import { JoinPage, LoginPage, MorePage, MoreRoutes, SetupPage } from '../features/account';
+import { isSetupInFlight } from '../features/account/util';
 
 function Loading() {
   return <div className="ch-center muted" role="status">読み込み中…</div>;
@@ -51,6 +52,8 @@ function RedirectIfAuthed({ children }: { children: ReactNode }) {
 /** 所属済みなら /setup へ入らない */
 function SetupGuard({ children }: { children: ReactNode }) {
   const { familyId, loading } = useFamily();
+  // 作成〜招待発行の途中は SetupPage 自身が遷移先を決める（読み込み表示に切り替えると SetupPage が外れてしまう）
+  if (isSetupInFlight()) return <>{children}</>;
   if (loading) return <Loading />;
   if (familyId) {
     // 作成直後は SetupPage が招待を sessionStorage('ch.setupInvite') に保存して /more/family へ移動する。

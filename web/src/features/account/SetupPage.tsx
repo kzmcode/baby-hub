@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, apiErrorMessage } from '../../lib/api';
+import { api, ApiError, apiErrorMessage } from '../../lib/api';
 import { useAuth } from '../../context';
 import { Button, Card, Field, SegmentedControl, TextInput } from '../../components';
-import { saveInvite } from './util';
+import { saveInvite, setSetupInFlight } from './util';
 import './account.css';
 
 type Step = 'name' | 'family' | 'child';
@@ -36,6 +36,7 @@ export function SetupPage() {
     if (step === 'name') { setStep('family'); return; }
     if (step === 'family') { setStep('child'); return; }
     setBusy(true);
+    setSetupInFlight(true);
     try {
       const child: { nickname: string; birthDate?: string; dueDate?: string; isSample?: boolean } = { nickname: nickname.trim() };
       if (date) { if (birth === 'born') child.birthDate = date; else child.dueDate = date; }
@@ -49,8 +50,12 @@ export function SetupPage() {
           dest = '/more/family';
         } catch { dest = '/more/family'; /* 招待は家族画面で作り直せる */ }
       }
+      setSetupInFlight(false);
       nav(dest, { replace: true });
     } catch (e) {
+      setSetupInFlight(false);
+      // すでに家族に所属している（二重送信や前回の作成が成功していた）ならエラーにせず家族画面へ
+      if (e instanceof ApiError && e.code === 'already-exists') { nav('/more/family', { replace: true }); return; }
       setError(apiErrorMessage(e));
       setBusy(false);
     }
@@ -67,14 +72,14 @@ export function SetupPage() {
       <form className="stack" onSubmit={next}>
         {step === 'name' && (
           <Card className="stack">
-            <Field label="あなたの表示名" hint="家族のメンバーに表示されます（例: ママ、パパ、名前）">
+            <Field label="あなたの表示名" required hint="家族のメンバーに表示されます（例: ママ、パパ、名前）">
               {(p) => <TextInput {...p} maxLength={50} required value={displayName} onChange={(e) => setDisplayName(e.target.value)} />}
             </Field>
           </Card>
         )}
         {step === 'family' && (
           <Card className="stack">
-            <Field label="家族の名前" hint="例: 鈴木家。管理者が家族データを削除するときの確認にも使います">
+            <Field label="家族の名前" required hint="例: 鈴木家。管理者が家族データを削除するときの確認にも使います">
               {(p) => <TextInput {...p} maxLength={50} required value={familyName} onChange={(e) => setFamilyName(e.target.value)} />}
             </Field>
             <p className="small muted">1人につき1つの家族に所属できます。相手は次の手順で招待します。</p>
@@ -82,7 +87,7 @@ export function SetupPage() {
         )}
         {step === 'child' && (
           <Card className="stack">
-            <Field label="子どもの呼び名" hint="本名でなくても構いません（例: 太郎、赤ちゃん）">
+            <Field label="子どもの呼び名" required hint="本名でなくても構いません（例: 太郎、赤ちゃん）">
               {(p) => <TextInput {...p} maxLength={50} required value={nickname} onChange={(e) => setNickname(e.target.value)} />}
             </Field>
             <SegmentedControl<Birth>
@@ -107,7 +112,7 @@ export function SetupPage() {
         <div className="row">
           {step !== 'name' && <Button onClick={() => setStep(step === 'child' ? 'family' : 'name')} disabled={busy}>戻る</Button>}
           <span className="spacer" />
-          <Button type="submit" variant="primary" disabled={!ok} loading={busy}>{step === 'child' ? '作成して招待へ進む' : '次へ'}</Button>
+          <Button type="submit" variant="primary" disabled={!ok} loading={busy}>{step === 'child' ? (inviteLater ? '作成してはじめる' : '作成して招待へ進む') : '次へ'}</Button>
         </div>
       </form>
     </main>

@@ -75,7 +75,7 @@ export function NotificationSection() {
           <span>静穏時間を使う（重要な申し送り以外は終了時刻まで保留）</span>
         </label>
         {q.enabled && (
-          <div className="row">
+          <div className="ch-pair">
             <Field label="開始">{(p) => <TextInput {...p} type="time" value={q.start} onChange={(e) => e.target.value && save({ quietHours: { ...q, start: e.target.value } })} />}</Field>
             <Field label="終了">{(p) => <TextInput {...p} type="time" value={q.end} onChange={(e) => e.target.value && save({ quietHours: { ...q, end: e.target.value } })} />}</Field>
           </div>

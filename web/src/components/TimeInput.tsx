@@ -17,7 +17,7 @@ export function TimeInput({ value, onChange, label = '時刻', withDate }: Props
   return (
     <div className="ch-field">
       <label className="ch-field__label" htmlFor={id}>{label}</label>
-      <div className="row">
+      <div className={withDate ? 'ch-pair' : undefined}>
         {withDate && (
           <input
             type="date"

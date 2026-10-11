@@ -7,12 +7,14 @@ interface FieldProps {
   error?: string;
   /** 任意項目の表示 */
   optional?: boolean;
+  /** 必須項目の表示 */
+  required?: boolean;
   /** 子の input に付ける id を受け取る render prop、または通常の子要素 */
   children: ReactNode | ((p: { id: string; describedBy?: string; invalid: boolean }) => ReactNode);
 }
 
 /** ラベル＋入力欄＋ヒント／エラーの組。children に関数を渡すと id/aria を受け取れる */
-export function Field({ label, hint, error, optional, children }: FieldProps) {
+export function Field({ label, hint, error, optional, required, children }: FieldProps) {
   const id = useId();
   const descId = hint || error ? `${id}-d` : undefined;
   return (
@@ -20,6 +22,7 @@ export function Field({ label, hint, error, optional, children }: FieldProps) {
       <label htmlFor={id} className="ch-field__label">
         {label}
         {optional && <span className="muted small">（任意）</span>}
+        {required && <span className="ch-field__req">必須</span>}
       </label>
       {typeof children === 'function' ? children({ id, describedBy: descId, invalid: !!error }) : children}
       {(hint || error) && (

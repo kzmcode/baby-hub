@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       includeAssets: ['icons/icon.svg'],
       workbox: {
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/firebase-messaging-sw\.js$/],
+        navigateFallbackDenylist: [/^\/__\//, /^\/firebase-messaging-sw\.js$/],
         globIgnores: ['**/firebase-messaging-sw.js'],
       },
       manifest: {

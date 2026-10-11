@@ -74,3 +74,8 @@ export function shouldFallbackToRedirect(e: unknown): boolean {
   const code = (e as ErrLike)?.code ?? '';
   return code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment' || code === 'auth/web-storage-unsupported';
 }
+
+/** LINE・Instagram などのアプリ内ブラウザか（Google ログインがブロック・失敗しやすい） */
+export function isInAppBrowser(ua: string): boolean {
+  return /\bLine\/|FBAN|FBAV|Instagram|MicroMessenger|KAKAOTALK|Twitter|; wv\)/i.test(ua);
+}

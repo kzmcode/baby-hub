@@ -256,7 +256,7 @@ open -e web/.env
 | 変数 | 取得場所 |
 | --- | --- |
 | `VITE_FIREBASE_API_KEY` | firebaseConfig の `apiKey`（GAS のスクリプトプロパティ `FIREBASE_WEB_API_KEY` にも同じ値） |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `authDomain`（`<project-id>.firebaseapp.com`） |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Hosting のドメイン（`<project-id>.web.app`）。`firebaseapp.com` のままだと iOS Safari 等でリダイレクトログインが失敗する。OAuth クライアントの承認済みリダイレクト URI に `https://<project-id>.web.app/__/auth/handler` を追加すること |
 | `VITE_FIREBASE_PROJECT_ID` | `projectId` |
 | `VITE_FIREBASE_STORAGE_BUCKET` | `storageBucket`（Storage は未使用だが値は入れる） |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | `messagingSenderId` |

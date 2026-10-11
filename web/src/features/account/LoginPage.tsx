@@ -5,7 +5,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 import { Button, Card, Field, Logo, SegmentedControl, TextInput } from '../../components';
-import { authErrorMessage, shouldFallbackToRedirect } from './logic/errors';
+import { authErrorMessage, isInAppBrowser, shouldFallbackToRedirect } from './logic/errors';
 import './account.css';
 
 type Mode = 'login' | 'register';
@@ -18,6 +18,7 @@ export function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const inApp = isInAppBrowser(navigator.userAgent);
 
   useEffect(() => {
     getRedirectResult(auth).catch((e) => setError(authErrorMessage(e)));
@@ -65,6 +66,13 @@ export function LoginPage() {
     <main className="page stack acc-narrow">
       <div className="row"><Logo size={56} /><h1 style={{ margin: 0 }}>Baby hub</h1></div>
       <p className="muted">夫婦で育児の記録・予定・健康情報を共有するアプリです。</p>
+
+      {inApp && (
+        <Card tone="warning" className="stack">
+          <strong>Safari または Chrome で開いてください</strong>
+          <p className="small">LINE などのアプリ内ブラウザでは Google ログインができません。画面右上（または下）のメニューから「ブラウザで開く」を選ぶか、リンクをコピーして Safari / Chrome に貼り付けてください。</p>
+        </Card>
+      )}
 
       <Card className="stack">
         <Button variant="primary" block loading={busy} onClick={google}>Google でログイン</Button>

@@ -91,7 +91,8 @@ async function send<O>(name: string, data: unknown, forceRefresh: boolean): Prom
   let idToken: string;
   try {
     idToken = await user.getIdToken(forceRefresh);
-  } catch {
+  } catch (e) {
+    console.warn(`[api] ${name}: ID トークンを取得できません`, e);
     throw new ApiError('unavailable', MESSAGES.unavailable!);
   }
   const ctrl = new AbortController();
@@ -108,11 +109,15 @@ async function send<O>(name: string, data: unknown, forceRefresh: boolean): Prom
     json = await res.json();
   } catch (e) {
     if (e instanceof ApiError) throw e;
+    console.warn(`[api] ${name}: ${ctrl.signal.aborted ? `${TIMEOUT_MS / 1000} 秒でタイムアウト` : '通信または応答の解析に失敗'}`, e);
     throw new ApiError('unavailable', MESSAGES.unavailable!);
   } finally {
     clearTimeout(timer);
   }
-  if (!json || typeof json !== 'object' || typeof json.ok !== 'boolean') throw new ApiError('unavailable', MESSAGES.unavailable!);
+  if (!json || typeof json !== 'object' || typeof json.ok !== 'boolean') {
+    console.warn(`[api] ${name}: 応答の形式が不正`, json);
+    throw new ApiError('unavailable', MESSAGES.unavailable!);
+  }
   if (json.ok) return json.result as O;
   throw toApiError({ code: json.error?.code, message: json.error?.message, details: json.error?.details });
 }

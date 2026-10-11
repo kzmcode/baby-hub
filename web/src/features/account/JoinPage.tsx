@@ -27,6 +27,7 @@ export function JoinPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const initialized = useRef(false);
+  const [attempt, setAttempt] = useState(0);
 
   // トークンを URL から読み取り、直ちに履歴から除去（ログイン往復用に sessionStorage へ一時保持）
   useEffect(() => {
@@ -50,12 +51,13 @@ export function JoinPage() {
       .catch((e) => { if (!cancelled) { setPreview(null); setError(inviteErrorMessage(e, apiErrorMessage(e))); } })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [token]);
+  }, [token, attempt]);
 
   function applyManual() {
     const t = extractToken(manual);
     if (!t) { setError('招待コードの形式が正しくありません。リンクまたはコード全体を貼り付けてください。'); return; }
-    store(t); setManual(''); setToken(t);
+    // 失敗時に打ち直さなくて済むよう入力は残す（成功すると入力欄自体が消える）
+    store(t); setError(''); setToken(t); setAttempt((n) => n + 1);
   }
 
   async function accept() {
@@ -94,7 +96,12 @@ export function JoinPage() {
         </Card>
       )}
 
-      {error && <Card tone="danger"><p role="alert">{error}</p></Card>}
+      {error && (
+        <Card tone="danger" className="stack">
+          <p role="alert">{error}</p>
+          {token && !preview && <Button onClick={() => setAttempt((n) => n + 1)}>もう一度確認する</Button>}
+        </Card>
+      )}
 
       {!preview && !loading && (
         <Card className="stack">

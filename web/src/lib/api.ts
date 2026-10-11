@@ -53,6 +53,8 @@ export function apiErrorMessage(e: unknown): string {
   if (wait !== null) return wait > 0 ? `操作が多すぎます。${wait}秒ほど待ってからもう一度お試しください。` : '操作が多すぎます。しばらく待ってからもう一度お試しください。';
   const byReason = reasonMessage(a);
   if (byReason) return byReason;
+  const cause = a.code === 'unavailable' ? (a.details as { cause?: unknown } | undefined)?.cause : undefined;
+  if (typeof cause === 'string') return `${MESSAGES.unavailable}（${cause}）`;
   return MESSAGES[a.code] ?? a.message;
 }
 
@@ -93,11 +95,12 @@ async function send<O>(name: string, data: unknown, forceRefresh: boolean): Prom
     idToken = await user.getIdToken(forceRefresh);
   } catch (e) {
     console.warn(`[api] ${name}: ID トークンを取得できません`, e);
-    throw new ApiError('unavailable', MESSAGES.unavailable!);
+    throw new ApiError('unavailable', MESSAGES.unavailable!, { cause: `token: ${(e as { code?: string })?.code ?? 'error'}` });
   }
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   let json: { ok?: boolean; result?: O; error?: { code?: string; message?: string; details?: unknown } };
+  let status = 0;
   try {
     const res = await fetch(endpoint(), {
       method: 'POST',
@@ -106,21 +109,26 @@ async function send<O>(name: string, data: unknown, forceRefresh: boolean): Prom
       redirect: 'follow',
       signal: ctrl.signal,
     });
+    status = res.status;
     json = await res.json();
   } catch (e) {
     if (e instanceof ApiError) throw e;
     console.warn(`[api] ${name}: ${ctrl.signal.aborted ? `${TIMEOUT_MS / 1000} 秒でタイムアウト` : '通信または応答の解析に失敗'}`, e);
-    throw new ApiError('unavailable', MESSAGES.unavailable!);
+    const cause = ctrl.signal.aborted ? 'timeout' : status ? `http ${status}` : `network: ${(e as Error)?.name ?? 'error'}`;
+    throw new ApiError('unavailable', MESSAGES.unavailable!, { cause });
   } finally {
     clearTimeout(timer);
   }
   if (!json || typeof json !== 'object' || typeof json.ok !== 'boolean') {
     console.warn(`[api] ${name}: 応答の形式が不正`, json);
-    throw new ApiError('unavailable', MESSAGES.unavailable!);
+    throw new ApiError('unavailable', MESSAGES.unavailable!, { cause: `bad-response ${status}` });
   }
   if (json.ok) return json.result as O;
   throw toApiError({ code: json.error?.code, message: json.error?.message, details: json.error?.details });
 }
+
+/** 何度呼んでも結果が変わらない読み取り系。通信失敗時に1回だけ自動再試行する */
+const RETRY_SAFE = new Set(['previewInvite']);
 
 async function call<I, O>(name: string, data: I): Promise<O> {
   try {
@@ -129,6 +137,10 @@ async function call<I, O>(name: string, data: I): Promise<O> {
     } catch (e) {
       // 再認証直後は古いトークンの auth_time の可能性があるため、最新トークンで1回だけ再試行
       if (e instanceof ApiError && isRecentAuth(e)) return await send<O>(name, data, true);
+      if (e instanceof ApiError && e.code === 'unavailable' && RETRY_SAFE.has(name)) {
+        const cause = (e.details as { cause?: string } | undefined)?.cause;
+        if (cause !== 'timeout') return await send<O>(name, data, true);
+      }
       throw e;
     }
   } catch (e) {

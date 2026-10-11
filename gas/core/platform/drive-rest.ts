@@ -25,7 +25,16 @@ export function createDriveRestAdapter(http: DriveHttp): DriveAdapter {
     if (up) headers['x-goog-user-project'] = up;
     if (opts.contentType) headers['Content-Type'] = opts.contentType;
     const res = http.fetch(url, { method, headers, body: opts.body });
-    if (res.status < 200 || res.status >= 300) throw new Error(`Drive API ${method} failed: HTTP ${res.status}`);
+    if (res.status < 200 || res.status >= 300) {
+      // 原因の切り分け用に Google API エラーの reason / message を添える（本文に個人情報は含まれない）
+      let detail = '';
+      try {
+        const e = (JSON.parse(res.body) as { error?: { message?: string; errors?: { reason?: string }[]; details?: { reason?: string }[] } }).error;
+        const reason = e?.errors?.[0]?.reason ?? e?.details?.[0]?.reason;
+        detail = [reason, e?.message?.slice(0, 200)].filter(Boolean).join(': ');
+      } catch { /* 本文が JSON でない */ }
+      throw new Error(`Drive API ${method} failed: HTTP ${res.status}${detail ? ` (${detail})` : ''}`);
+    }
     return res.body;
   };
   const list = (q: string, fields: string): Record<string, unknown>[] => {

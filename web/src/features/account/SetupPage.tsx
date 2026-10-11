@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, ApiError, apiErrorMessage } from '../../lib/api';
-import { useAuth } from '../../context';
+import { useAuth, useFamily } from '../../context';
 import { Button, Card, Field, SegmentedControl, TextInput } from '../../components';
 import { saveInvite, setSetupInFlight } from './util';
 import './account.css';
@@ -18,7 +18,17 @@ const STEPS: { key: Step; label: string }[] = [
  */
 export function SetupPage() {
   const { user } = useAuth();
+  const { familyId: currentFamilyId } = useFamily();
   const nav = useNavigate();
+  // 作成後の遷移先。家族の購読に新しい家族が届いてから遷移する（先に遷移すると「家族なし」と判定されて /setup に戻される）
+  const [pendingDest, setPendingDest] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pendingDest) return;
+    const go = () => { setSetupInFlight(false); nav(pendingDest, { replace: true }); };
+    if (currentFamilyId) { go(); return; }
+    const timer = setTimeout(go, 20_000); // 購読が届かない場合の保険
+    return () => clearTimeout(timer);
+  }, [pendingDest, currentFamilyId, nav]);
   const [step, setStep] = useState<Step>('name');
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
   const [familyName, setFamilyName] = useState('');
@@ -50,12 +60,11 @@ export function SetupPage() {
           dest = '/more/family';
         } catch { dest = '/more/family'; /* 招待は家族画面で作り直せる */ }
       }
-      setSetupInFlight(false);
-      nav(dest, { replace: true });
+      setPendingDest(dest);
     } catch (e) {
-      setSetupInFlight(false);
       // すでに家族に所属している（二重送信や前回の作成が成功していた）ならエラーにせず家族画面へ
-      if (e instanceof ApiError && e.code === 'already-exists') { nav('/more/family', { replace: true }); return; }
+      if (e instanceof ApiError && e.code === 'already-exists') { setPendingDest('/more/family'); return; }
+      setSetupInFlight(false);
       setError(apiErrorMessage(e));
       setBusy(false);
     }

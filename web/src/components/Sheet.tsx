@@ -14,6 +14,10 @@ interface Props {
 export function Sheet({ open, onClose, title, children, footer }: Props) {
   const panel = useRef<HTMLDivElement>(null);
   const prevFocus = useRef<Element | null>(null);
+  // onClose は呼び出し側で毎回作り直されることが多い。依存に入れると再描画のたびに
+  // 下のエフェクトが走り直し、入力中の欄からフォーカスを奪ってしまう（iOS ではキーボードが閉じる・変換が切れる）
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
@@ -22,7 +26,7 @@ export function Sheet({ open, onClose, title, children, footer }: Props) {
     document.body.style.overflow = 'hidden';
     panel.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
       if (e.key === 'Tab' && panel.current) {
         const f = panel.current.querySelectorAll<HTMLElement>('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
         if (f.length === 0) return;
@@ -37,7 +41,7 @@ export function Sheet({ open, onClose, title, children, footer }: Props) {
       document.body.style.overflow = prevOverflow;
       (prevFocus.current as HTMLElement | null)?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   return (

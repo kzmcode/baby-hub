@@ -305,14 +305,14 @@ export function RecordSheet({ open, type, onClose, initialEvent, onSaved }: Reco
               ))}
             </div>
             <Field label="手入力（mL）" optional>
-              {({ id }) => <TextInput id={id} inputMode="numeric" value={ml} onChange={(e) => setMl(e.target.value.replace(/[^\d.]/g, ''))} placeholder="例: 90" />}
+              {({ id }) => <TextInput id={id} inputMode="numeric" value={ml} onChange={(e) => setMl(e.target.value.normalize('NFKC').replace(/[^\d.]/g, ''))} placeholder="例: 90" />}
             </Field>
             {feed === 'pumping' && <p className="small muted">搾乳量は哺乳量には加算されません。</p>}
           </div>
           {feed === 'breast' && (
             <div className="row">
-              <Field label="左（分）" optional>{({ id }) => <TextInput id={id} inputMode="numeric" value={leftMin} onChange={(e) => setLeftMin(e.target.value.replace(/\D/g, ''))} />}</Field>
-              <Field label="右（分）" optional>{({ id }) => <TextInput id={id} inputMode="numeric" value={rightMin} onChange={(e) => setRightMin(e.target.value.replace(/\D/g, ''))} />}</Field>
+              <Field label="左（分）" optional>{({ id }) => <TextInput id={id} inputMode="numeric" value={leftMin} onChange={(e) => setLeftMin(e.target.value.normalize('NFKC').replace(/\D/g, ''))} />}</Field>
+              <Field label="右（分）" optional>{({ id }) => <TextInput id={id} inputMode="numeric" value={rightMin} onChange={(e) => setRightMin(e.target.value.normalize('NFKC').replace(/\D/g, ''))} />}</Field>
             </div>
           )}
         </>

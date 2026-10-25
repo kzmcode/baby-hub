@@ -29,3 +29,4 @@ credentials*.json
 .clasprc.json
 *-debug.log
 e2e/dev-server.log
+portfolio/

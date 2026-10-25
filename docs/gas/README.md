@@ -11,7 +11,7 @@ GAS 時間主導トリガー: dispatchNotifications（5分毎）, dailyBackup（
 ## 前提
 
 - **所有者の Google アカウント（本書では `<OWNER_EMAIL>` と表記。実際のメールアドレスに読み替える）**で Apps Script と Firebase を使う（スクリプト所有者＝実行ユーザー）。Web アプリは「実行ユーザー: 自分」で動くため、GAS は**所有者の権限**で Firestore を読み書きし（Rules を迂回）、Identity Toolkit の管理 API（アカウント削除）も呼ぶ。所有者アカウントはそのプロジェクトの Owner/Editor であること。所有者アカウントの漏えいは全データの漏えいになるため、2 段階認証を必ず有効にする。
-- Node 22 以上。`cd gas && npm install`。devDependencies は脆弱性解消版（vitest 5 / esbuild 0.28 / clasp 3 / TypeScript 7 など）に更新済み。`npm audit` に残る 3 件（high, `braces` ← `micromatch` ← `@google/clasp`）は clasp の開発用依存で、修正版が存在せず本番バンドル（`dist/Code.js`）には含まれない。clasp 3 でも `login` / `create` / `push` / `deploy` は同じコマンド名で使える（実機のデプロイは未検証）。
+- Node **22.23.4 以上の 22.x / 24.22.1 以上の 24.x / 26.12.1 以上の 26.x**（CVE-2026-111497 修正版）。リポジトリルートで `nvm install && nvm use` を実行する。各パッケージの `engines.node` と `.npmrc` で未修正版を拒否する。`cd gas && npm install`。devDependencies は脆弱性解消版（vitest 5 / esbuild 0.28 / clasp 3 / TypeScript 7 など）に更新済み。`npm audit` に残る 3 件（high, `braces` ← `micromatch` ← `@google/clasp`）は clasp の開発用依存で、修正版が存在せず本番バンドル（`dist/Code.js`）には含まれない。clasp 3 でも `login` / `create` / `push` / `deploy` は同じコマンド名で使える（実機のデプロイは未検証）。
 
 ## 1. clasp ログインとスクリプト作成
 

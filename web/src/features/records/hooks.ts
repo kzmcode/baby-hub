@@ -40,7 +40,7 @@ export function useEventsRange(start: Date | null, end: Date | null, padBackDays
   );
   const { data, loading, error, fromCache } = useCollection<DailyEvent>(q);
   const events = useMemo(() => data.map((d) => toEv(d as EventDoc)), [data]);
-  const sessions = useMemo(() => buildSleepSessions(events), [events]);
+  const sessions = useMemo(() => buildSleepSessions(events, s != null ? new Date(s) : undefined), [events, s]);
   return { events, sessions, loading, error, fromCache };
 }
 

@@ -44,6 +44,20 @@ describe('sleep sessions', () => {
     expect(buildSleepSessions([ss('s', 'sleep_start', '2026-10-08T10:00:00'), ss('s', 'sleep_end', '2026-10-08T09:00:00')])[0].state).toBe('conflict');
     expect(buildSleepSessions([ss('s', 'sleep_start', '2026-10-08T10:00:00'), ss('s', 'sleep_start', '2026-10-08T10:01:00')])[0].reason).toBe('multiple_start');
   });
+  it('取得範囲の先頭から跨いだ睡眠の終了だけは確認待ちにしない', () => {
+    const windowStart = j('2026-10-06T00:00:00');
+    const sessions = buildSleepSessions([
+      ss('s0', 'sleep_end', '2026-10-06T01:30:00'),
+      ss('s1', 'sleep_start', '2026-10-08T01:00:00'), ss('s1', 'sleep_end', '2026-10-08T02:00:00'),
+    ], windowStart);
+    expect(sessions.map((s) => s.sessionId)).toEqual(['s1']);
+    expect(currentSleepState(sessions)).toEqual({ kind: 'awake', lastWake: j('2026-10-08T02:00:00') });
+  });
+  it('取得範囲の先頭から 1 日以上後の開始なしの終了は確認待ち', () => {
+    const windowStart = j('2026-10-06T00:00:00');
+    expect(buildSleepSessions([ss('s0', 'sleep_end', '2026-10-07T00:00:00')], windowStart)[0].reason).toBe('orphan_end');
+    expect(buildSleepSessions([ss('s0', 'sleep_end', '2026-10-06T01:30:00')])[0].reason).toBe('orphan_end');
+  });
   it('void は無視、起きている状態は最終起床', () => {
     const v = { ...ss('s1', 'sleep_start', '2026-10-08T10:00:00'), status: 'void' as const };
     expect(currentSleepState(buildSleepSessions([v])).kind).toBe('awake');

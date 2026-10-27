@@ -15,12 +15,16 @@ export interface SleepSession {
   reason?: 'multiple_start' | 'multiple_end' | 'end_before_start' | 'orphan_end' | 'multiple_open';
 }
 
+/** 取得範囲の先頭からこの時間内の「開始なしの終了」は、開始が範囲外にあるとみなす */
+const ORPHAN_END_LOOKBACK_MS = 86400000;
+
 /**
  * sleep_start / sleep_end を sessionId で対応づけてセッションを組み立てる。
  * 終了時刻を推測で埋めない。複数開始・複数終了・終了<開始・開始なしの終了は 'conflict'（確認待ち）。
  * 未終了のセッションが複数あれば、それらも 'conflict'。
+ * windowStart（取得範囲の先頭）を渡すと、その直後の開始なしの終了は範囲外から跨いだ睡眠として除外する。
  */
-export function buildSleepSessions(events: Ev[]): SleepSession[] {
+export function buildSleepSessions(events: Ev[], windowStart?: Date): SleepSession[] {
   const map = new Map<string, { starts: Ev[]; ends: Ev[] }>();
   for (const e of events) {
     if (e.status !== 'active') continue;
@@ -47,7 +51,10 @@ export function buildSleepSessions(events: Ev[]): SleepSession[] {
     };
     if (g.starts.length > 1) out.push({ ...base, state: 'conflict', reason: 'multiple_start' });
     else if (g.ends.length > 1) out.push({ ...base, state: 'conflict', reason: 'multiple_end' });
-    else if (!s) out.push({ ...base, state: 'conflict', reason: 'orphan_end' });
+    else if (!s) {
+      if (windowStart && en.occurredAt.getTime() - windowStart.getTime() < ORPHAN_END_LOOKBACK_MS) continue;
+      out.push({ ...base, state: 'conflict', reason: 'orphan_end' });
+    }
     else if (en && en.occurredAt.getTime() < s.occurredAt.getTime())
       out.push({ ...base, state: 'conflict', reason: 'end_before_start' });
     else if (!en) out.push({ ...base, state: 'open' });

@@ -68,7 +68,7 @@ export function createNodePlatform(env: Record<string, string | undefined> = pro
     },
     getAccessToken: () => 'owner',
     config: {
-      projectId: env.FIREBASE_PROJECT_ID || 'demo-baby-hub',
+      projectId: env.FIREBASE_PROJECT_ID || 'demo-kosodate-hub',
       webApiKey: env.FIREBASE_WEB_API_KEY || 'fake-api-key',
       firestoreBaseUrl: `http://${fsHost}`,
       identityBaseUrl: `http://${authHost}/identitytoolkit.googleapis.com`,

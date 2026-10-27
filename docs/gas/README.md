@@ -25,7 +25,7 @@ Apps Script API を有効化: https://script.google.com/home/usersettings で「
 
 ```bash
 npm run build
-npx clasp create --type standalone --title "BabyHub API" --rootDir dist
+npx clasp create --type standalone --title "KosodateHub API" --rootDir dist
 ```
 
 生成された `.clasp.json`（`scriptId` と `rootDir: dist`。`.clasp.json.example` 参照）はコミットしない。`clasp create` が `dist/appsscript.json` を上書きした場合は `npm run build` で戻す（スコープ・webapp 設定が必要）。
@@ -71,7 +71,7 @@ npm run push        # build && clasp push
 
 ### トリガー・手動実行
 
-エディタから手動実行できる関数: `setupTriggers`, `dispatchNotifications`, `dailyBackup`, `backupNow(kind)`, `restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm)`。詳細は [backup](backup/README.md) / [notify](notify/README.md)。
+エディタから手動実行できる関数: `setupTriggers`, `dispatchNotifications`, `dailyBackup`, `backupNow(kind)`, `backupFullNow`, `restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm)`。詳細は [backup](backup/README.md) / [notify](notify/README.md)。
 
 ## OAuth スコープの変更と再承認（セキュリティ修正 S1）
 
@@ -114,11 +114,11 @@ GAS の UrlFetch は 2 万回/日。リクエスト（doPost）の枠 **15,000 �
 
 ```bash
 export JAVA_HOME=/opt/homebrew/opt/openjdk@21; export PATH=$JAVA_HOME/bin:$PATH
-firebase emulators:start --only firestore,auth --project demo-baby-hub   # リポジトリルート
+firebase emulators:start --only firestore,auth --project demo-kosodate-hub   # リポジトリルート
 cd gas && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npm run dev   # http://127.0.0.1:8787
 ```
 
-`web/.env.local` に `VITE_GAS_ENDPOINT=http://127.0.0.1:8787`（`localhost` でも可）。環境変数: `FIREBASE_PROJECT_ID`（既定 demo-baby-hub。**`demo-` で始まらないと起動拒否**）, `FIREBASE_WEB_API_KEY`（既定 fake-api-key）, `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST`（**両方必須**、無いと起動拒否）。`127.0.0.1` でのみ待ち受け。詳細は [core](core/README.md)。Drive は `gas/.local-drive/` に保存。FCM は無効（`FCM_ENABLED=1` で有効化）。
+`web/.env.local` に `VITE_GAS_ENDPOINT=http://127.0.0.1:8787`（`localhost` でも可）。環境変数: `FIREBASE_PROJECT_ID`（既定 demo-kosodate-hub。**`demo-` で始まらないと起動拒否**）, `FIREBASE_WEB_API_KEY`（既定 fake-api-key）, `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST`（**両方必須**、無いと起動拒否）。`127.0.0.1` でのみ待ち受け。詳細は [core](core/README.md)。Drive は `gas/.local-drive/` に保存。FCM は無効（`FCM_ENABLED=1` で有効化）。
 
 テスト: `npm test`（エミュレータ不要）、`npm run test:emu`（`firebase emulators:exec` で Firestore/Auth エミュレータ結合テスト。Java 21 が必要）、`npm run typecheck`。
 

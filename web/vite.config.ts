@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => {
         globIgnores: ['**/firebase-messaging-sw.js'],
       },
       manifest: {
-        name: 'Baby hub',
-        short_name: 'Baby hub',
+        name: 'Kosodate Hub',
+        short_name: 'Kosodate Hub',
         description: '夫婦で育児の記録・予定・健康情報を共有するアプリ',
         lang: 'ja',
         start_url: '/',

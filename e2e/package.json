@@ -1,10 +1,10 @@
 {
-  "name": "baby-hub-e2e",
+  "name": "kosodate-hub-e2e",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "firebase emulators:exec --config ../firebase.json --only auth,firestore --project demo-baby-hub \"scripts/with-dev-server.sh npx vitest run\"",
+    "test": "firebase emulators:exec --config ../firebase.json --only auth,firestore --project demo-kosodate-hub \"scripts/with-dev-server.sh npx vitest run\"",
     "test:watch": "vitest"
   },
   "devDependencies": {

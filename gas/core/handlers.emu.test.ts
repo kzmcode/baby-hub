@@ -306,7 +306,7 @@ describe('notification send defense', () => {
 describe('backup deletion and permissions', () => {
   it('full + incremental cannot resurrect a deleted family, even when only the old full is restored', () => {
     const f = makeFamily();
-    const raw = createNodePlatform({ ...process.env, DISABLE_RATE_LIMIT: '1', LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'baby-hub-backup-regression-')) });
+    const raw = createNodePlatform({ ...process.env, DISABLE_RATE_LIMIT: '1', LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'kosodate-hub-backup-regression-')) });
     const local = { ...raw, config: { ...raw.config, projectId: `demo-backup-${Date.now()}` } };
     const source = dbFor(local);
     for (const path of [`families/${f.familyId}`, `families/${f.familyId}/members/${f.owner.uid}`, `families/${f.familyId}/members/${f.editor.uid}`, `users/${f.owner.uid}/familyRefs/${f.familyId}`, `users/${f.editor.uid}/familyRefs/${f.familyId}`]) source.doc(path).set(db.doc(path).get().data());
@@ -331,7 +331,7 @@ describe('backup deletion and permissions', () => {
   });
   it('old snapshots cannot grant membership or ownership, and legacy backups are refused', () => {
     const f = makeFamily();
-    const local = createNodePlatform({ ...process.env, LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'baby-hub-restore-permissions-')) });
+    const local = createNodePlatform({ ...process.env, LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'kosodate-hub-restore-permissions-')) });
     const folder = local.drive!.ensureFolder('BabyHub-Backup');
     const file = local.drive!.writeJson(folder, 'snapshot.json', JSON.stringify({ formatVersion: 2, projectId: local.config.projectId, kind: 'full', startedAt: new Date().toISOString(), part: 1, docs: [
       { path: `families/${f.familyId}`, data: { name: 'old', ownerUid: f.owner.uid, status: 'active', memberCount: 2 } },

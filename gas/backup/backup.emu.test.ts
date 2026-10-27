@@ -11,7 +11,7 @@ import { hashToken } from '../shared/pure';
 
 const run = `b${Date.now()}`;
 function setup(label: string) {
-  const raw = createNodePlatform({ ...process.env, DISABLE_RATE_LIMIT: '1', LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'baby-hub-bk-')) });
+  const raw = createNodePlatform({ ...process.env, DISABLE_RATE_LIMIT: '1', LOCAL_DRIVE_DIR: mkdtempSync(join(tmpdir(), 'kosodate-hub-bk-')) });
   const local = { ...raw, config: { ...raw.config, projectId: `demo-${label}-${run}` } };
   setPlatform(local);
   return { local, src: dbFor(local) };

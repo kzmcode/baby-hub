@@ -1,10 +1,10 @@
 {
-  "name": "baby-hub-rules-tests",
+  "name": "kosodate-hub-rules-tests",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "firebase emulators:exec --only firestore --project demo-baby-hub \"vitest run\"",
+    "test": "firebase emulators:exec --only firestore --project demo-kosodate-hub \"vitest run\"",
     "test:watch": "vitest"
   },
   "devDependencies": {

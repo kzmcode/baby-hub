@@ -51,7 +51,7 @@ export function InvitePanel({ familyId }: { familyId: string }) {
           <code className="acc-code">{link}</code>
           <div className="row">
             <Button onClick={() => copy(link, '招待リンク')}>リンクをコピー</Button>
-            {canShare() && <Button onClick={() => shareText('Baby hub に参加してください。', link)}>共有する</Button>}
+            {canShare() && <Button onClick={() => shareText('Kosodate Hub に参加してください。', link)}>共有する</Button>}
           </div>
           <details>
             <summary>招待コードで渡す</summary>

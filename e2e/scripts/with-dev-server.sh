@@ -7,7 +7,7 @@ GAS_DIR="$HERE/../../gas"
 PORT="${PORT:-8787}"
 export NODE_ENV=test PORT FCM_ENABLED=0 ENABLE_TEST_ENDPOINTS=1
 PORT_RL="${PORT_RL:-8788}"
-export FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-demo-baby-hub}"
+export FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-demo-kosodate-hub}"
 # テスト用のローカル Drive は毎回作り直す
 export LOCAL_DRIVE_DIR="${LOCAL_DRIVE_DIR:-$GAS_DIR/.local-drive}"
 rm -rf "$LOCAL_DRIVE_DIR"

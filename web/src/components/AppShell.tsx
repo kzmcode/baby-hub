@@ -25,7 +25,7 @@ export function AppShell() {
         <div className="ch-brand">
           <Logo size={52} />
           <div className="ch-topbar__title">
-            <strong className="ch-topbar__name">Baby hub</strong>
+            <strong className="ch-topbar__name">Kosodate Hub</strong>
             <span className="ch-topbar__sub">{child ? `${child.nickname}${age ? `（${age}）` : ''}` : 'つながる、育てる、毎日を。'}</span>
           </div>
         </div>

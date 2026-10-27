@@ -54,7 +54,7 @@ export const NOTIFY_TEXT = {
   test: 'テスト通知です',
   ownerTransfer: '管理者の移譲が提案されています',
 } as const;
-export const NOTIFY_TITLE = 'Baby hub';
+export const NOTIFY_TITLE = 'Kosodate Hub';
 
 export function reminderDueMs(startMs: number): number {
   return startMs - REMINDER_LEAD_MS;

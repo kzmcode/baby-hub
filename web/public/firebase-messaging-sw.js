@@ -22,7 +22,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   if (payload.notification) return;
   const d = payload.data || {};
-  self.registration.showNotification(d.title || 'Baby hub', {
+  self.registration.showNotification(d.title || 'Kosodate Hub', {
     body: d.body || '新しいお知らせがあります',
     icon: '/icons/icon.svg',
     data: { url: self.resolveNotificationUrl(d.url, self.location.origin) },

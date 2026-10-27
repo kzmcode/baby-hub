@@ -64,7 +64,7 @@ export function LoginPage() {
 
   return (
     <main className="page stack acc-narrow">
-      <div className="row"><Logo size={56} /><h1 style={{ margin: 0 }}>Baby hub</h1></div>
+      <div className="row"><Logo size={56} /><h1 style={{ margin: 0 }}>Kosodate Hub</h1></div>
       <p className="muted">夫婦で育児の記録・予定・健康情報を共有するアプリです。</p>
 
       {inApp && (

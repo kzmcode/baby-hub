@@ -1,5 +1,5 @@
 // ローカル開発サーバー。Auth / Firestore エミュレータに接続し、GAS の doPost と同じ処理を提供する。
-//   FIREBASE_PROJECT_ID（既定 demo-baby-hub）, FIREBASE_WEB_API_KEY（既定 fake-api-key）,
+//   FIREBASE_PROJECT_ID（既定 demo-kosodate-hub）, FIREBASE_WEB_API_KEY（既定 fake-api-key）,
 //   FIRESTORE_EMULATOR_HOST, FIREBASE_AUTH_EMULATOR_HOST（両方必須。demo- 以外のプロジェクト ID は起動拒否）
 //   /__test/* は NODE_ENV=test && ENABLE_TEST_ENDPOINTS=1 のときだけ。127.0.0.1 のみで待ち受け
 import { createServer, type Server } from 'node:http';
@@ -34,7 +34,7 @@ export function testEndpointsEnabled(env: Record<string, string | undefined> = p
  * Auth / Firestore エミュレータの環境変数が揃っているときだけ起動する。違反は例外。
  */
 export function assertSafeEnvironment(env: Record<string, string | undefined> = process.env): void {
-  const projectId = env.FIREBASE_PROJECT_ID || 'demo-baby-hub';
+  const projectId = env.FIREBASE_PROJECT_ID || 'demo-kosodate-hub';
   if (!projectId.startsWith('demo-')) throw new Error(`dev-server refuses to start: FIREBASE_PROJECT_ID must start with "demo-" (got "${projectId}")`);
   if (!env.FIRESTORE_EMULATOR_HOST || !env.FIREBASE_AUTH_EMULATOR_HOST) {
     throw new Error('dev-server refuses to start: FIRESTORE_EMULATOR_HOST and FIREBASE_AUTH_EMULATOR_HOST must be set (run under the Firebase emulators)');

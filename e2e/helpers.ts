@@ -1,7 +1,7 @@
 // e2e 共通: GAS dev-server への fetch（web/src/lib/api.ts と同じ形式）と簡易ヘルパ
 import type { Auth } from 'firebase/auth';
 
-export const PROJECT = 'demo-baby-hub';
+export const PROJECT = 'demo-kosodate-hub';
 export const ENDPOINT = process.env.GAS_ENDPOINT ?? 'http://127.0.0.1:8787';
 
 export class GasError extends Error {

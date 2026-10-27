@@ -1,12 +1,12 @@
 {
-  "name": "baby-hub-gas",
+  "name": "kosodate-hub-gas",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:emu": "firebase emulators:exec --config ../firebase.json --only firestore,auth --project demo-baby-hub \"vitest run emu\"",
+    "test:emu": "firebase emulators:exec --config ../firebase.json --only firestore,auth --project demo-kosodate-hub \"vitest run emu\"",
     "dev": "tsx core/dev-server.ts",
     "push": "npm run build && clasp push",
     "deploy": "npm run build && clasp push && clasp deploy"

@@ -311,7 +311,7 @@ describe('追加シナリオ', () => {
 });
 
 describe('バックアップ・復元', () => {
-  const RESTORE = 'demo-baby-hub-restore';
+  const RESTORE = 'demo-kosodate-hub-restore';
   const driveRoot = resolve(process.env.LOCAL_DRIVE_DIR ?? resolve(__dirname, '../gas/.local-drive'));
   let manifest: any;
   let fullIds: string[] = [];

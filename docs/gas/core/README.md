@@ -16,7 +16,7 @@
 | `context.ts` | `CallContext`・`Handler`・現在の Platform / Firestore |
 | `dispatch.ts` / `router.ts` | リクエスト処理（ハンドラ表を注入可能）／各機能の `handlers` を統合 |
 | `log.ts` | `logInfo/logWarn/logError` |
-| `main.gas.ts` | GAS エントリ（`doPost`, `doGet`, `dispatchNotifications`, `dailyBackup`, `backupNow`, `restoreBackup`, `setupTriggers`） |
+| `main.gas.ts` | GAS エントリ（`doPost`, `doGet`, `dispatchNotifications`, `dailyBackup`, `backupNow`, `backupFullNow`, `restoreBackup`, `setupTriggers`） |
 | `ratelimit.ts` | uid 単位の回数制限（Cache の固定窓、strict は ScriptLock、日次は JST 暦日窓をプロパティに保持） |
 | `budget.ts` | 日次 UrlFetch 予算（リクエスト 15,000 / トリガー 5,000） |
 | `dev-server.ts` | ローカル HTTP サーバー（127.0.0.1:8787、localhost 系 Origin のみ CORS 許可） |
@@ -55,7 +55,7 @@ Web は Firebase の ID トークンを本文 `{fn, data, idToken}` で送る（
 ## dev-server の安全策
 
 - `127.0.0.1` でのみ待ち受ける。
-- 起動条件: `FIREBASE_PROJECT_ID`（未指定は `demo-baby-hub`）が `demo-` で始まり、`FIRESTORE_EMULATOR_HOST` と `FIREBASE_AUTH_EMULATOR_HOST` の両方が設定されていること。満たさないと例外で起動を拒否する（本番プロジェクトへの誤接続防止）。
+- 起動条件: `FIREBASE_PROJECT_ID`（未指定は `demo-kosodate-hub`）が `demo-` で始まり、`FIRESTORE_EMULATOR_HOST` と `FIREBASE_AUTH_EMULATOR_HOST` の両方が設定されていること。満たさないと例外で起動を拒否する（本番プロジェクトへの誤接続防止）。
 - `POST /__test/*`（`runDispatch` / `runBackupNow` / `listBackups` / `runRestore`）は **`NODE_ENV=test` かつ `ENABLE_TEST_ENDPOINTS=1`** のときだけ有効。`e2e/scripts/with-dev-server.sh` は `NODE_ENV=test` のみ設定しているため、**`ENABLE_TEST_ENDPOINTS=1` の追加が必要（e2e 担当 S4 が対応）**。e2e は回数制限に当たらないよう `DISABLE_RATE_LIMIT=1` も指定してよい。
 - CORS: `Origin` が `http://localhost:*` / `http://127.0.0.1:*` のときだけ `Access-Control-Allow-Origin` にその Origin を反映（それ以外は ACAO なし）。
 - `dist/Code.js`（本番 GAS）には dev-server・`/__test` は含まれない。

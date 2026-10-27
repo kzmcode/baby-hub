@@ -71,5 +71,5 @@ export function buildCsvFiles(data: ExportData, date = data.exportedAt.slice(0, 
   groups.push({ key: 'members', label: 'メンバー', rows: (data.members ?? []) as Record<string, unknown>[] });
   return groups
     .filter((g) => g.rows.length > 0)
-    .map((g) => ({ key: g.key, label: g.label, filename: `baby-hub-${g.key}-${date}.csv`, rows: g.rows.length, content: BOM + toCsv(g.rows) }));
+    .map((g) => ({ key: g.key, label: g.label, filename: `kosodate-hub-${g.key}-${date}.csv`, rows: g.rows.length, content: BOM + toCsv(g.rows) }));
 }

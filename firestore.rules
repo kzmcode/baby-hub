@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Baby hub Firestore Security Rules
+// Kosodate Hub Firestore Security Rules
 // 方針: deny by default。家族データは members/{uid}.status == 'active' のみ読取可。
 // クライアントは「create のみ」（イベント・予定等）。更新・削除は Callable Functions（Admin SDK）経由。
 //

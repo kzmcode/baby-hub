@@ -22,7 +22,7 @@ export function ExportSection() {
     setBusy(false);
   }
   const date = data?.exportedAt.slice(0, 10) ?? '';
-  const json = () => data && downloadText(`baby-hub-${date}.json`, JSON.stringify({ schemaVersion: 1, ...data }, null, 2), 'application/json;charset=utf-8');
+  const json = () => data && downloadText(`kosodate-hub-${date}.json`, JSON.stringify({ schemaVersion: 1, ...data }, null, 2), 'application/json;charset=utf-8');
   const allCsv = () => csv.forEach((f, i) => setTimeout(() => downloadText(f.filename, f.content, 'text/csv;charset=utf-8'), i * 400));
 
   return (

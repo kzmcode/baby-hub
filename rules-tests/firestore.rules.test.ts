@@ -18,7 +18,7 @@ let env: RulesTestEnvironment;
 beforeAll(async () => {
   setLogLevel('silent');
   env = await initializeTestEnvironment({
-    projectId: 'demo-baby-hub',
+    projectId: 'demo-kosodate-hub',
     firestore: { rules: readFileSync(resolve(__dirname, '../firestore.rules'), 'utf8') },
   });
 });

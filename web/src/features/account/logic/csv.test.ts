@@ -31,7 +31,7 @@ describe('csv', () => {
     const ev = files.find((f) => f.key === 'events')!;
     expect(ev.content.startsWith(BOM)).toBe(true);
     expect(ev.content).toContain('childId,id,type');
-    expect(ev.filename).toBe('baby-hub-events-2026-10-08.csv');
+    expect(ev.filename).toBe('kosodate-hub-events-2026-10-08.csv');
     expect(files.map((f) => f.key)).toEqual(['events', 'children']);
   });
 });

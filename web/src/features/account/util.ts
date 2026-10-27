@@ -28,7 +28,7 @@ export function canShare(): boolean {
   return typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 }
 export async function shareText(text: string, url?: string): Promise<void> {
-  try { await navigator.share({ title: 'Baby hub への招待', text, url }); } catch { /* キャンセル */ }
+  try { await navigator.share({ title: 'Kosodate Hub への招待', text, url }); } catch { /* キャンセル */ }
 }
 
 export function downloadText(filename: string, content: string, mime: string): void {

@@ -7,7 +7,7 @@ describe('dev-server safety', () => {
   it('starts only for demo- projects with emulator env vars', () => {
     expect(() => assertSafeEnvironment({ ...emu })).not.toThrow();
     expect(() => assertSafeEnvironment({ ...emu, FIREBASE_PROJECT_ID: 'demo-x' })).not.toThrow();
-    expect(() => assertSafeEnvironment({ ...emu, FIREBASE_PROJECT_ID: 'baby-hub-prod' })).toThrow(/demo-/);
+    expect(() => assertSafeEnvironment({ ...emu, FIREBASE_PROJECT_ID: 'kosodate-hub-prod' })).toThrow(/demo-/);
     expect(() => assertSafeEnvironment({})).toThrow(/EMULATOR_HOST/);
     expect(() => assertSafeEnvironment({ FIRESTORE_EMULATOR_HOST: 'x:1' })).toThrow(/EMULATOR_HOST/);
   });

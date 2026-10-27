@@ -1,4 +1,4 @@
-# Baby hub
+# Kosodate Hub
 
 新生児期の家族が、お世話の記録・予定・健康情報を共有するための PWA です。
 
@@ -66,7 +66,7 @@ npm --prefix web install && npm --prefix gas install
 #   ローカル開発では VITE_USE_EMULATORS=true、VITE_GAS_ENDPOINT=http://localhost:8787 にする
 
 # ターミナル1: エミュレータ（リポジトリルート）
-firebase emulators:start --only auth,firestore --project demo-baby-hub
+firebase emulators:start --only auth,firestore --project demo-kosodate-hub
 
 # ターミナル2: GAS ローカルサーバー（Node 上で GAS コアを動かす）
 cd gas && npm run dev
@@ -77,7 +77,7 @@ cd web && npm run dev
 
 - 変数の意味は [web/.env.example](web/.env.example) を参照してください。値は Firebase Console で確認します。
 - アプリは http://localhost:5173、Emulator UI は http://localhost:4000 です。
-- dev-server の既定プロジェクトは `demo-baby-hub` なので、エミュレータも同じプロジェクトで起動します。
+- dev-server の既定プロジェクトは `demo-kosodate-hub` なので、エミュレータも同じプロジェクトで起動します。
 - 手順の詳細と招待フローの確認方法は [docs/manual.md](docs/manual.md) の 8 章を参照してください。
 
 ## テスト
@@ -92,7 +92,7 @@ cd web && npm run dev
 | `npm --prefix rules-tests test` | Firestore Rules のテスト（エミュレータを自動起動） |
 | `npm --prefix e2e test` | dev-server とエミュレータによる結合スモークテスト |
 
-エミュレータを使うテストは Java 21 が必要で、`demo-baby-hub` プロジェクトを使うため本番には接続しません。詳細は [docs/manual.md](docs/manual.md) の 9 章を参照してください。
+エミュレータを使うテストは Java 21 が必要で、`demo-kosodate-hub` プロジェクトを使うため本番には接続しません。詳細は [docs/manual.md](docs/manual.md) の 9 章を参照してください。
 
 ## デプロイ・運用
 

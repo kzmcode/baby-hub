@@ -1,6 +1,6 @@
-# Baby hub 手作業セットアップ・運用マニュアル
+# Kosodate Hub 手作業セットアップ・運用マニュアル
 
-生成されたコードを受け取った開発者本人が、手作業で調整・セットアップ・デプロイするための手順書です。コマンドは macOS (zsh) 前提で、リポジトリ直下 `/Users/kazuma/Documents/dev/baby-hub` で実行します。
+生成されたコードを受け取った開発者本人が、手作業で調整・セットアップ・デプロイするための手順書です。コマンドは macOS (zsh) 前提で、リポジトリ直下 `/Users/kazuma/Documents/dev/kosodate-hub` で実行します。
 
 > **Blaze 版から GAS 版への切替経緯**: 当初は Cloud Functions（Blaze 従量課金必須）でバックエンドを実装しましたが、課金を避けるため Firebase を **Spark（無料）プラン**のまま運用する構成に変更し、Functions の機能を **Google Apps Script（GAS, `gas/`）** へ移植しました。`functions/` は参考用に残してありますが**デプロイしません**。将来 Blaze に戻す場合は `functions/` を使えます（その際は Web の `web/src/lib/api.ts` を `httpsCallable` 方式に戻し、`firebase.json` に functions を復元する必要があります。`docs/architecture.md` を参照）。
 
@@ -8,7 +8,7 @@
 
 **現在の状態（前提）**
 - ローカルで `git init` 済み・未コミット
-- Firebase プロジェクト `baby-hub-kzm` を作成済み（単一プロジェクト構成。dev/prod の分離はしていない）
+- Firebase プロジェクト `kosodate-hub-kzm` を作成済み（単一プロジェクト構成。dev/prod の分離はしていない）
 - `web/.env` 未作成、GAS 未デプロイ
 - 型チェック・単体テスト・Rules テスト・GAS のエミュレータ結合テストは通過。**実 GAS 環境・実機・画面での動作は未確認**
 
@@ -117,7 +117,7 @@ java -version   # openjdk 21 と表示されること
 
 ### 依存関係のインストール
 ```bash
-cd /Users/kazuma/Documents/dev/baby-hub
+cd /Users/kazuma/Documents/dev/kosodate-hub
 npm --prefix web install
 npm --prefix gas install
 npm --prefix rules-tests install
@@ -142,7 +142,7 @@ gh auth status                 # Active account が目的のアカウントか�
 
 ### .env をコミットしないことの確認
 ```bash
-cd /Users/kazuma/Documents/dev/baby-hub
+cd /Users/kazuma/Documents/dev/kosodate-hub
 cat .gitignore 2>/dev/null || echo "(.gitignore がありません)"
 ```
 無い/不足していれば作成します（既にあれば不足行だけ追記）。
@@ -172,9 +172,9 @@ git ls-files | grep -E 'node_modules|/lib/|/dist/' | head   # 何も出なけれ
 ### コミットと push（private 推奨）
 ```bash
 git config user.email "<OWNER_EMAIL>"   # このリポジトリ限定の設定
-git commit -m "Initial commit: Baby hub"
+git commit -m "Initial commit: Kosodate Hub"
 git branch -M main
-gh repo create baby-hub --private --source=. --remote=origin --push
+gh repo create kosodate-hub --private --source=. --remote=origin --push
 gh repo view --web      # オーナーが <OWNER_EMAIL> のアカウントか確認
 ```
 `requirements.md` には家庭の運用方針が含まれるので、公開しない（private）ことを推奨します。
@@ -199,18 +199,18 @@ firebase login:use <OWNER_EMAIL>   # 使用アカウントをこのプロジェ�
 
 | 用途 | プロジェクト ID 例 | エイリアス |
 | --- | --- | --- |
-| 開発 | `baby-hub-kzm` | `dev` |
-| 本番 | `baby-hub-prod-kzm` | `prod` |
+| 開発 | `kosodate-hub-kzm` | `dev` |
+| 本番 | `kosodate-hub-prod-kzm` | `prod` |
 
 ```bash
-firebase projects:create baby-hub-kzm --display-name "Baby hub Dev"
-firebase projects:create baby-hub-prod-kzm --display-name "Baby hub Prod"
+firebase projects:create kosodate-hub-kzm --display-name "Kosodate Hub Dev"
+firebase projects:create kosodate-hub-prod-kzm --display-name "Kosodate Hub Prod"
 ```
 （Google Analytics は不要です。）
 
 ### 4.3 Firestore の作成（asia-northeast1）
 ```bash
-firebase firestore:databases:create '(default)' --location=asia-northeast1 --project baby-hub-kzm
+firebase firestore:databases:create '(default)' --location=asia-northeast1 --project kosodate-hub-kzm
 ```
 Console の「Firestore Database > データベースを作成 > ロケーション: asia-northeast1 (Tokyo) > 本番モード」でも同じです。**ロケーションは後から変更できません。**
 
@@ -218,9 +218,9 @@ Console の「Firestore Database > データベースを作成 > ロケーショ
 ```json
 {
   "projects": {
-    "default": "baby-hub-kzm",
-    "dev": "baby-hub-kzm",
-    "prod": "baby-hub-prod-kzm"
+    "default": "kosodate-hub-kzm",
+    "dev": "kosodate-hub-kzm",
+    "prod": "kosodate-hub-prod-kzm"
   }
 }
 ```
@@ -236,7 +236,7 @@ Console > Authentication > 「始める」。
    - 「Google」を有効化。**プロジェクトのサポートメール**に `<OWNER_EMAIL>` を選択して保存。
    - 「メール/パスワード」を有効化（メールリンクは不要）。
 2. **設定 > 承認済みドメイン**: `localhost` と Hosting のドメイン（`<project-id>.web.app`, `<project-id>.firebaseapp.com`）が入っていることを確認。独自ドメインを使うならここに追加。
-3. **テンプレート（認証 > Templates）**: 「パスワード再設定」「メールアドレスの確認」の言語を **日本語** に変更。件名・差出人名（例: Baby hub）も必要に応じて編集。
+3. **テンプレート（認証 > Templates）**: 「パスワード再設定」「メールアドレスの確認」の言語を **日本語** に変更。件名・差出人名（例: Kosodate Hub）も必要に応じて編集。
 4. パスワードポリシーは Authentication > 設定 > パスワードポリシーで必要に応じて強化。
 
 dev / prod の両方で実施します。
@@ -245,7 +245,7 @@ dev / prod の両方で実施します。
 
 ## 6. Web アプリ登録と `web/.env` 作成
 
-1. Console > プロジェクトの設定（歯車）> 「全般」> 「マイアプリ」> **ウェブ (`</>`)** を追加。ニックネーム `baby-hub-web`。**Firebase Hosting の設定は後で行うのでチェック不要**。
+1. Console > プロジェクトの設定（歯車）> 「全般」> 「マイアプリ」> **ウェブ (`</>`)** を追加。ニックネーム `kosodate-hub-web`。**Firebase Hosting の設定は後で行うのでチェック不要**。
 2. 表示される `firebaseConfig` の値を `web/.env` に写します。
 
 ```bash
@@ -279,12 +279,12 @@ open -e web/.env
 
 1. **clasp ログイン**（アカウント確認が重要）
    ```bash
-   cd /Users/kazuma/Documents/dev/baby-hub/gas
+   cd /Users/kazuma/Documents/dev/kosodate-hub/gas
    npx clasp login              # ブラウザで <OWNER_EMAIL> を選ぶ
    npx clasp login --status     # 別アカウントなら npx clasp logout してやり直す
    ```
    https://script.google.com/home/usersettings で「Google Apps Script API」をオンにする。
-2. **スクリプト作成**: `npm run build` → `npx clasp create --type standalone --title "BabyHub API" --rootDir dist`。生成される `.clasp.json` はコミットしない。`dist/appsscript.json` が上書きされたら `npm run build` で戻す（スコープと webapp 設定が必要）。
+2. **スクリプト作成**: `npm run build` → `npx clasp create --type standalone --title "KosodateHub API" --rootDir dist`。生成される `.clasp.json` はコミットしない。`dist/appsscript.json` が上書きされたら `npm run build` で戻す（スコープと webapp 設定が必要）。
 3. **GCP プロジェクト紐付け**: Firebase Console でプロジェクト番号を確認 → Apps Script エディタ（`npx clasp open`）> プロジェクトの設定 > GCP プロジェクトを変更。OAuth 同意画面を設定（外部。テストモードなら `<OWNER_EMAIL>` をテストユーザーに追加。リフレッシュトークンの 7 日失効を避けるなら「本番環境に公開」を推奨）。API を有効化: **Cloud Firestore API / Firebase Cloud Messaging API / Identity Toolkit API / Google Drive API**。
 4. **スクリプトプロパティ**: `FIREBASE_PROJECT_ID`（プロジェクト ID）、`FIREBASE_WEB_API_KEY`（6 章の `apiKey`）。`BACKUP_FOLDER_ID` は自動作成。
 5. **push とデプロイ**: `npm run push`（= build && clasp push）→ エディタの「デプロイ > 新しいデプロイ > ウェブアプリ」、実行ユーザー **自分**、アクセスできるユーザー **全員**。発行された `/exec` URL を `web/.env` の `VITE_GAS_ENDPOINT` に設定。ブラウザでその URL を開き `{"ok":true}` が返ること。
@@ -295,7 +295,7 @@ open -e web/.env
 `npm run push` の後、エディタの「デプロイを管理」> 既存デプロイの鉛筆 > バージョン「新バージョン」> デプロイ。**新規デプロイを作ると URL が変わり、Web の `VITE_GAS_ENDPOINT` と再ビルド・再デプロイが必要になります。** `clasp deploy` / `npm run deploy` は新しいデプロイを作るため、初回以外は使いません。
 
 ### 手動実行できる関数
-エディタから `setupTriggers`, `dispatchNotifications`, `dailyBackup`, `backupNow(kind)`, `restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm)` を実行できます（[backup README](gas/backup/README.md)）。
+エディタから `setupTriggers`, `dispatchNotifications`, `dailyBackup`, `backupNow(kind)`, `backupFullNow`, `restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm)` を実行できます（[backup README](gas/backup/README.md)）。
 
 ### 利用上限（無料 Gmail の GAS）
 - URL Fetch **2 万回/日**（Firestore REST・FCM・Identity Toolkit の呼び出しがすべて 1 回ずつ数えられる）。このうちリクエスト（`doPost`）に **15,000 回/日**、トリガー（通知ディスパッチ・バックアップ）に **5,000 回/日** を別カウンタで割り当てています（詳細は 13.1b）。
@@ -311,19 +311,19 @@ open -e web/.env
 ### 手順（ターミナル3つ）
 ```bash
 # ターミナル1: エミュレータ起動（Java 21 が必要。functions エミュレータは使わない）
-cd /Users/kazuma/Documents/dev/baby-hub
+cd /Users/kazuma/Documents/dev/kosodate-hub
 firebase emulators:start --only auth,firestore
 
 # ターミナル2: GAS ローカルサーバー（Node 上で GAS コアを動かす）
-cd /Users/kazuma/Documents/dev/baby-hub/gas
+cd /Users/kazuma/Documents/dev/kosodate-hub/gas
 npm run dev
 
 # ターミナル3: Web 開発サーバー
-cd /Users/kazuma/Documents/dev/baby-hub/web
+cd /Users/kazuma/Documents/dev/kosodate-hub/web
 npm run dev
 ```
 - アプリ: http://localhost:5173、Emulator UI: http://localhost:4000
-- dev-server の既定は `FIREBASE_PROJECT_ID=demo-baby-hub` なので、エミュレータを `--project demo-baby-hub` で起動するか環境変数を揃えること（[docs/gas/README.md](gas/README.md#ローカル開発エミュレータ--dev-server) 参照）。
+- dev-server の既定は `FIREBASE_PROJECT_ID=demo-kosodate-hub` なので、エミュレータを `--project demo-kosodate-hub` で起動するか環境変数を揃えること（[docs/gas/README.md](gas/README.md#ローカル開発エミュレータ--dev-server) 参照）。
 - エミュレータのデータは終了で消えます。残すなら `firebase emulators:start --only auth,firestore --export-on-exit=./.emulator-data --import=./.emulator-data`（`.emulator-data` は gitignore に追加）。
 - ローカルでは FCM は送信されず（ログのみ）、ドライブは `gas/.local-drive/` に保存されます。トリガーによる定期実行もありません。Push の確認は 11 章で実環境に対して行います。
 
@@ -341,7 +341,7 @@ npm run dev
 ## 9. テスト実行
 
 ```bash
-cd /Users/kazuma/Documents/dev/baby-hub
+cd /Users/kazuma/Documents/dev/kosodate-hub
 npm --prefix web run typecheck
 npm --prefix web test                  # vitest（純粋関数）
 npm --prefix gas run typecheck
@@ -349,7 +349,7 @@ npm --prefix gas test                  # vitest（エミュレータ不要）
 npm --prefix gas run test:emu          # Firestore/Auth エミュレータ結合（firebase emulators:exec。Java 21 必須）
 npm --prefix rules-tests test          # firebase emulators:exec で Firestore エミュレータを自動起動（Java 21 必須）
 ```
-`rules-tests` と `gas test:emu` は `--project demo-baby-hub` を使うため、本物のプロジェクトには接続しません。
+`rules-tests` と `gas test:emu` は `--project demo-kosodate-hub` を使うため、本物のプロジェクトには接続しません。
 
 結合スモークテスト（`e2e/`）:
 ```bash
@@ -371,7 +371,7 @@ Spark では Functions を使わないため、Firebase 側のデプロイは **
 
 ### 10.1 事前確認
 ```bash
-firebase use              # 対象が baby-hub-kzm であることを確認
+firebase use              # 対象が kosodate-hub-kzm であることを確認
 ```
 gcloud による API 有効化は不要です（GAS 用の API 有効化は 7 章の GCP 紐付けで行う）。
 
@@ -410,7 +410,7 @@ HTTPS の Hosting URL（`https://<project-id>.web.app`）で確認します（�
 2. **ホーム画面のアイコンから起動**（通常の Safari タブでは Web Push は動きません）。
 3. アプリの通知設定画面で通知を有効化する操作をタップ → OS の許可ダイアログで「許可」。許可は**ユーザー操作から**要求されます。
 4. 「テスト通知」（`sendTestNotification`）を押して端末に届くか、タップで該当画面が開くか確認。
-5. 届かない場合: iOS の設定 > 通知 > Baby hub が許可か、集中モード/おやすみモードを確認。
+5. 届かない場合: iOS の設定 > 通知 > Kosodate Hub が許可か、集中モード/おやすみモードを確認。
 
 ### Android (Chrome)
 1. Chrome で URL を開く → メニュー > 「ホーム画面に追加 / アプリをインストール」。
@@ -467,7 +467,7 @@ HTTPS の Hosting URL（`https://<project-id>.web.app`）で確認します（�
 
 ### 13.2 復元演習（本番前に dev で 1 回通す）
 ```
-restoreBackup('baby-hub-kzm', 'FULL_FILE_ID[,P2_ID]', 'INC1_ID,INC2_ID,...')
+restoreBackup('kosodate-hub-kzm', 'FULL_FILE_ID[,P2_ID]', 'INC1_ID,INC2_ID,...')
 ```
 - ファイル ID は `listBackups()` かドライブの URL から取得。対象は直近の完了フル + それ以降の差分。
 - 復元先 projectId が本番と同じ場合は第 4 引数 `'OVERWRITE_PRODUCTION'` が必要（誤爆防止）。

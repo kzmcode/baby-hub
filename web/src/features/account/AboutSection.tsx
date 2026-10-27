@@ -7,7 +7,7 @@ export function AboutSection() {
   return (
     <SubPage title="アプリ情報">
       <Card className="stack">
-        <p>Baby hub バージョン {APP_VERSION}</p>
+        <p>Kosodate Hub バージョン {APP_VERSION}</p>
         <h2>プライバシーの要点</h2>
         <ul className="small">
           <li>広告 SDK、行動追跡、外部への販売は行いません。</li>

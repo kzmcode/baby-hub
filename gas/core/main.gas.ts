@@ -70,6 +70,11 @@ export function backupNow(kind?: 'full' | 'incremental'): void {
   withLock('backupNow', () => metered(gasPlatform, 'trigger', () => runBackupNow(kind)), 'dailyBackup');
 }
 
+/** 手動実行用。エディタの「実行」は引数を渡せないため、フルを強制する入口を別に置く */
+export function backupFullNow(): void {
+  backupNow('full');
+}
+
 /** 初回に 1 回だけ手動実行する。既存トリガーを全削除して作り直す */
 export function setupTriggers(): void {
   for (const t of ScriptApp.getProjectTriggers()) ScriptApp.deleteTrigger(t);

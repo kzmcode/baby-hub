@@ -11,6 +11,7 @@ function dispatchNotifications() { return CH.dispatchNotifications(); }
 function dailyBackup() { return CH.dailyBackup(); }
 function restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm) { return CH.restoreBackup(targetProjectId, fullFileId, incrementalFileIdsCsv, confirm); }
 function backupNow(kind) { return CH.backupNow(kind); }
+function backupFullNow() { return CH.backupFullNow(); }
 function setupTriggers() { return CH.setupTriggers(); }
 `;
 
